@@ -1,0 +1,526 @@
+/* General Styling for Header */
+body {
+    background-color: #848FA5;
+    font-family: 'Rock Salt', cursive;
+    color: white;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Rock Salt', cursive;
+}
+
+.btn-rock {
+    background-color: #FF6600;
+    color: white;
+    border: none;
+    font-family: 'Rock Salt', cursive;
+}
+
+.btn-rock:hover {
+    background-color: #e65c00;
+}
+
+.input-group .form-control:not(:first-child):not(:last-child) {
+    border-radius: 0;
+}
+
+@media (max-width: 576px) {
+    .input-group {
+        flex-direction: column;
+    }
+
+    .input-group .form-control,
+    .input-group .btn {
+        border-radius: 0.25rem !important;
+        margin-bottom: 5px;
+    }
+}
+
+/* Index Styling */
+
+.carousel-img {
+    width: 100%;
+    height: 400px;
+    object-fit: cover;
+    object-position: 90% 60%;
+}
+
+.event-card {
+    background-color: #e5dcc5; /* light beige/tan */
+    border: none; /* optional: remove default border */
+}
+
+.event-card .card-title {
+    color: #2d2d2a; /* dark text for contrast */
+    font-family: 'Bebas Neue', sans-serif; /* rock-style title font */
+}
+
+.event-card .card-text {
+    color: #3a3a3a; /* slightly lighter than title for readability */
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.85rem;
+}
+
+.event-card .btn-primary {
+    background-color: #2d2d2a; /* dark button for contrast */
+    border: none;
+    color: #fff; /* white text */
+}
+
+.event-card .btn-primary:hover {
+    background-color: #44403c; /* slightly lighter on hover */
+}
+
+.event-img {
+    height: 120px;
+    object-fit: cover;
+}
+
+
+@media (max-width: 768px) {
+    .carousel-img {
+        height: 250px;
+    }
+}
+
+@media (max-width: 576px) {
+    .carousel-img {
+        height: 180px;
+    }
+}
+
+@media (max-width: 300px) {
+    .event-img {
+        height: 150px;
+    }
+}
+
+#demo {
+    border: 2px solid #4C4C47; /* Change color as needed */
+    border-radius: 10px; /* Rounded corners */
+    overflow: hidden; /* Ensure images don't overflow corners */
+}
+
+h6.card-title {
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 1px;
+    font-size: 1.1rem;
+}
+
+.card-text {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.85rem;
+}
+
+.section-img {
+    max-height: 600px;
+    width: 100%;
+    object-fit: cover;
+    object-position: 90% 10%;
+    border-radius: 0.5rem;
+}
+
+.minisection-img {
+    max-height: 170px;
+    width: 100%;
+    object-fit: cover;
+}
+
+.section-divider {
+    border: 0;
+    height: 2px;
+    background: #4C4C47;
+    margin: 2rem 0;
+    opacity: 0.5;
+}
+
+/* Signup Styling */
+
+
+.signup-section {
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 1px;
+}
+
+.signup-section .card {
+    background-color: #e5dcc5;
+}
+
+/* Login Styling */
+
+.login-section {
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 1px;
+}
+
+.login-section .card {
+    background-color: #e5dcc5;
+}
+
+/* Create Event Styling */
+.concert-section {
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 1px;
+}
+
+.section-header {
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+    margin-top: 20px;
+    font-weight: bold;
+}
+
+.card {
+    border-radius: 15px;
+    background-color: #e5dcc5;
+}
+
+/* Update Event Styling */
+
+.edit-event-section {
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 1px;
+}
+
+.section-header {
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+    margin-top: 20px;
+    font-weight: bold;
+}
+
+.edit-event-section .card {
+    background-color: #e5dcc5;
+}
+
+/* Upcoming Event Styling */
+ul.concertbookingline {
+    list-style-type: none;
+    position: relative;
+}
+
+ul.concertbookingline:before {
+    content: ' ';
+    background: #d4d9df;
+    display: inline-block;
+    position: absolute;
+    left: 29px;
+    width: 2px;
+    height: 100%;
+    z-index: 400;
+}
+
+ul.concertbookingline > li {
+    margin: 20px 0;
+    padding-left: 20px;
+}
+
+ul.concertbookingline > li:before {
+    content: ' ';
+    background: white;
+    display: inline-block;
+    position: absolute;
+    border-radius: 50%;
+    border: 3px solid #C14953;
+    left: 20px;
+    width: 20px;
+    height: 20px;
+    z-index: 400;
+}
+
+.Text-section {
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 1px;
+    background: #e5dcc5;
+    color: #4C4C47;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 10px;
+    margin: 10px 0;
+}
+
+.Text-section p.date {
+    font-size: 0.9rem;
+    margin-bottom: 2px;
+}
+
+.Text-section p.location {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-top: 0;
+}
+
+.Text-section p.order, p.status {
+    font-size: 0.75rem;
+    margin-bottom: 2px;
+
+}
+
+.concert-title {
+    color: #4C4C47;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.concert-title:hover {
+    color: #ffffff;
+}
+
+.booking-buttons {
+    text-align: right;
+    margin-top: 8px;
+}
+
+.booking-buttons .btn {
+    border-radius: 6px;
+    font-size: 0.8rem;
+    padding: 4px 10px;
+}
+
+.section-divider {
+    margin: 0.5rem 0;
+}
+
+/* Details Styling */
+
+#details-page .container {
+    max-width: 900px;
+    margin: 30px auto;
+    font-family: 'Bebas Neue', sans-serif;
+    background: #4C4C47;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+#details-page h1 {
+    font-size: 36px;
+    margin-bottom: 10px;
+}
+
+#details-page .event-info {
+    margin-bottom: 20px;
+    font-size: 18px;
+    line-height: 1.6;
+}
+
+#details-page .booking {
+    max-width: 400px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #e5dcc5;
+    border-radius: 12px;
+    font-family: 'Oswald', sans-serif;
+}
+
+#details-page .booking h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 1px;
+    font-size: 28px;
+    margin-bottom: 15px;
+}
+
+#details-page .booking .ticket-option {
+    margin-bottom: 15px;
+}
+
+#details-page .booking input,
+#details-page .booking button,
+#details-page .add-comment textarea {
+    border-radius: 8px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    width: 100%;
+}
+
+#details-page .booking button {
+    background: #2d2d2a;
+    color: white;
+    border: none;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+#details-page .comments {
+    margin-top: 30px;
+}
+
+#details-page .comments h2 {
+    font-size: 28px;
+    margin-bottom: 15px;
+}
+
+#details-page .comment {
+    background: #f1f1f1;
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    color: #4C4C47;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.85rem;
+}
+
+#details-page .add-comment textarea {
+    width: 100%;
+    height: 80px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+    padding: 8px;
+    font-family: Arial, sans-serif;
+}
+
+#details-page .add-comment button {
+    background: #444;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+/* Events Styling */
+
+
+.event-card {
+    background-color: #e5dcc5;
+    border: none;
+}
+
+.event-card .card-title {
+    color: #2d2d2a;
+    font-family: 'Bebas Neue', sans-serif;
+}
+
+.event-card .card-text {
+    color: #3a3a3a;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.85rem;
+}
+
+.event-card .btn-primary {
+    background-color: #2d2d2a;
+    border: none;
+    color: #fff;
+}
+
+.event-card .btn-primary:hover {
+    background-color: #44403c;
+}
+
+.event-img {
+    height: 120px;
+    object-fit: cover;
+}
+
+
+h6.card-title {
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 1px;
+    font-size: 1.1rem;
+}
+
+.card-text {
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.85rem;
+}
+
+.section-divider {
+    border: 0;
+    height: 2px;
+    background: #4C4C47;
+    margin: 2rem 0;
+    opacity: 0.5;
+}
+
+/* History Styling */
+
+
+ul.concertbookingline {
+    list-style-type: none;
+    position: relative;
+}
+
+ul.concertbookingline:before {
+    content: ' ';
+    background: #d4d9df;
+    display: inline-block;
+    position: absolute;
+    left: 29px;
+    width: 2px;
+    height: 100%;
+    z-index: 400;
+}
+
+ul.concertbookingline > li {
+    margin: 20px 0;
+    padding-left: 20px;
+}
+
+ul.concertbookingline > li:before {
+    content: ' ';
+    background: white;
+    display: inline-block;
+    position: absolute;
+    border-radius: 50%;
+    border: 3px solid #C14953;
+    left: 20px;
+    width: 20px;
+    height: 20px;
+    z-index: 400;
+}
+
+.Text-section {
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 1px;
+    background: #e5dcc5;
+    color: #4C4C47;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    padding: 10px;
+    margin: 10px 0;
+}
+
+.Text-section p.date {
+    font-size: 0.9rem;
+    margin-bottom: 2px;
+}
+
+.Text-section p.location {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-top: 0;
+}
+
+.Text-section p.order, p.status {
+    font-size: 0.75rem;
+    margin-bottom: 2px;
+
+}
+
+.concert-title {
+    color: #4C4C47;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.concert-title:hover {
+    color: #ffffff;
+}
+
+.booking-buttons {
+    border-radius: 8px;
+    padding: 0.75rem;
+}
+
+.booking-buttons .btn-outline-dark {
+    color: white;
+}
+
+.section-divider {
+    margin: 0.5rem 0;
+}
+
+
+
+
