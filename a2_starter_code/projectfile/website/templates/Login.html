@@ -12,32 +12,35 @@
                             <h2 class="text-center mb-3">Login</h2>
                             <p class="text-center mb-5">Please enter your username and password</p>
 
-                            <form>
+                            <form method="POST">
+                                {{ form.hidden_tag() }}
+
                                 <!-- Username -->
                                 <div class="form-outline mb-4">
-                                    <input type="text" class="form-control form-control-lg" placeholder="Username"/>
+                                    {{ form.user_name(class="form-control form-control-lg", placeholder="Username") }}
                                 </div>
 
                                 <!-- Password -->
                                 <div class="form-outline mb-4">
-                                    <input type="password" class="form-control form-control-lg" placeholder="Password"/>
+                                    {{ form.password(class="form-control form-control-lg", placeholder="Password") }}
                                 </div>
 
                                 <!-- Forgot Password -->
                                 <p class="text-center text-muted mb-4">
-                                    <a href="" class="fw-bold text-body"><u>Forgot Password?</u></a>
+                                    <a href="#" class="fw-bold text-body"><u>Forgot Password?</u></a>
                                 </p>
 
+                                <!-- Submit button -->
                                 <div class="d-flex justify-content-center">
-                                    <a href="" class="btn btn-success btn-block btn-lg gradient-custom-4 text-body">
-                                        Login
-                                    </a>
+                                    {{ form.submit(class="btn btn-success btn-block btn-lg gradient-custom-4 text-body") }}
                                 </div>
 
                                 <!-- Register Link -->
                                 <p class="text-center text-muted mt-4 mb-0">
-                                    Don't have an account? <a href="Signup.html" class="fw-bold text-body"><u>Register
-                                    here</u></a>
+                                    Don't have an account?
+                                    <a href="{{ url_for('auth.signup') }}" class="fw-bold text-body">
+                                        <u>Register here</u>
+                                    </a>
                                 </p>
                             </form>
 

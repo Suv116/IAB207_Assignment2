@@ -1,5 +1,9 @@
-from flask import Blueprint, render_template, redirect
-from flask_login import login_required, logout_user
+from flask import Blueprint, render_template, redirect, url_for, flash, request
+from flask_login import login_required, logout_user, current_user
+from flask_bcrypt import generate_password_hash
+from .forms import RegisterForm
+from .models import User
+from . import db
 
 main_bp = Blueprint('main', __name__)
 
@@ -42,18 +46,9 @@ def upcoming_event():
 def history():
     return render_template('History.html')
 
-# Login page
-@main_bp.route('/login')
-def login():
-    return render_template('Login.html')
-
-# Signup page
-@main_bp.route('/signup')
-def signup():
-    return render_template('Signup.html')
-
+# Logout
 @main_bp.route('/logout')
 @login_required
 def logout():
     logout_user()
-    return redirect('index.html')
+    return redirect(url_for('main.index'))

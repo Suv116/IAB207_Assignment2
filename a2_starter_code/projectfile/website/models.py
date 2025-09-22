@@ -1,10 +1,12 @@
 import enum
-
-from . import db
 from datetime import datetime
 from flask_login import UserMixin
+from . import db
 
 
+# -------------------------
+# User Model
+# -------------------------
 class User(db.Model, UserMixin):
     __tablename__ = "users"
 
@@ -15,13 +17,20 @@ class User(db.Model, UserMixin):
     password_hash = db.Column(db.String(200), nullable=False)
 
     # Relationships
-    comments = db.relationship("Comment", backref="users", lazy=True, cascade="all, delete-orphan")
-    orders = db.relationship("Order", backref="users", lazy=True, cascade="all, delete-orphan")
-    events = db.relationship("Event", back_populates="users", lazy=True, cascade="all, delete-orphan")
+    events = db.relationship(
+        "Event", back_populates="creator", lazy=True, cascade="all, delete-orphan"
+    )
+    comments = db.relationship(
+        "Comment", back_populates="user", lazy=True, cascade="all, delete-orphan"
+    )
+    orders = db.relationship(
+        "Order", back_populates="user", lazy=True, cascade="all, delete-orphan"
+    )
 
 
-
-
+# -------------------------
+# Event Status Enum
+# -------------------------
 class EventStatus(enum.Enum):
     OPEN = "open"
     SOLD_OUT = "sold out"
@@ -29,6 +38,9 @@ class EventStatus(enum.Enum):
     INACTIVE = "inactive"
 
 
+# -------------------------
+# Event Model
+# -------------------------
 class Event(db.Model):
     __tablename__ = "events"
 
@@ -36,22 +48,28 @@ class Event(db.Model):
     title = db.Column(db.String(200), nullable=False)
     description = db.Column(db.Text, nullable=True)
     date = db.Column(db.DateTime, default=datetime.utcnow)
-
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    creator = db.relationship("User", back_populates="events")
-
     status = db.Column(db.Enum(EventStatus), nullable=False, default=EventStatus.OPEN)
-
     photo = db.Column(db.String(255), nullable=True)
 
+    # Foreign key to User
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    creator = db.relationship("User", back_populates="events")  # matches User.events
 
     # Relationships
-    orders = db.relationship("Order", backref="event", lazy=True, cascade="all, delete-orphan")
-    comments = db.relationship("Comment", backref="event", lazy=True, cascade="all, delete-orphan")
-    tickets = db.relationship("Ticket", back_populates="event", lazy=True, cascade="all, delete-orphan")
+    tickets = db.relationship(
+        "Ticket", back_populates="event", lazy=True, cascade="all, delete-orphan"
+    )
+    comments = db.relationship(
+        "Comment", back_populates="event", lazy=True, cascade="all, delete-orphan"
+    )
+    orders = db.relationship(
+        "Order", back_populates="event", lazy=True, cascade="all, delete-orphan"
+    )
 
 
-
+# -------------------------
+# Ticket Model
+# -------------------------
 class Ticket(db.Model):
     __tablename__ = "tickets"
 
@@ -61,14 +79,17 @@ class Ticket(db.Model):
 
     # Foreign key to Event
     event_id = db.Column(db.Integer, db.ForeignKey("events.id"), nullable=False)
-
-    # Relationship back to Event
     event = db.relationship("Event", back_populates="tickets")
-    orders = db.relationship("Order", back_populates="ticket", lazy=True, cascade="all, delete-orphan")
+
+    # Relationships
+    orders = db.relationship(
+        "Order", back_populates="ticket", lazy=True, cascade="all, delete-orphan"
+    )
 
 
-
-
+# -------------------------
+# Comment Model
+# -------------------------
 class Comment(db.Model):
     __tablename__ = "comments"
 
@@ -80,7 +101,14 @@ class Comment(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     event_id = db.Column(db.Integer, db.ForeignKey("events.id"), nullable=False)
 
+    # Relationships
+    user = db.relationship("User", back_populates="comments")
+    event = db.relationship("Event", back_populates="comments")
 
+
+# -------------------------
+# Order Model
+# -------------------------
 class Order(db.Model):
     __tablename__ = "orders"
 
@@ -95,6 +123,6 @@ class Order(db.Model):
     ticket_id = db.Column(db.Integer, db.ForeignKey("tickets.id"), nullable=False)
 
     # Relationships
+    user = db.relationship("User", back_populates="orders")
+    event = db.relationship("Event", back_populates="orders")
     ticket = db.relationship("Ticket", back_populates="orders")
-
-

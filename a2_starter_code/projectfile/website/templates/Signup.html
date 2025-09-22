@@ -5,52 +5,36 @@
     <div class="signup-section mask d-flex align-items-center h-100 gradient-custom-3">
         <div class="container h-100">
             <div class="row justify-content-center align-items-center h-100">
-                <!-- Single column, centered -->
                 <div class="col-md-6 mx-auto">
                     <div class="card" style="border-radius: 15px;">
                         <div class="card-body p-5">
                             <h2 class="text-center mb-5">Create an account</h2>
 
-                            <form>
+                            <form method="POST">
+                                {{ form.hidden_tag() }}
+
                                 <div class="form-outline mb-4">
-                                    <input type="text" class="form-control form-control-lg" placeholder="Username"/>
+                                    {{ form.user_name(class="form-control form-control-lg", placeholder="Username") }}
                                 </div>
 
                                 <div class="form-outline mb-4">
-                                    <input type="email" class="form-control form-control-lg" placeholder="Email"/>
+                                    {{ form.email(class="form-control form-control-lg", placeholder="Email") }}
                                 </div>
 
                                 <div class="form-outline mb-4">
-                                    <input type="phoneNumber" class="form-control form-control-lg"
-                                           placeholder="Phone Number"/>
+                                    {{ form.password(class="form-control form-control-lg", placeholder="Password") }}
                                 </div>
 
                                 <div class="form-outline mb-4">
-                                    <input type="password" class="form-control form-control-lg" placeholder="Password"/>
-                                </div>
-
-                                <div class="form-outline mb-4">
-                                    <input type="password" class="form-control form-control-lg"
-                                           placeholder="Repeat your password"/>
-                                </div>
-
-                                <div class="form-check d-flex justify-content-center mb-5">
-                                    <input class="form-check-input me-2" type="checkbox"/>
-                                    <label class="form-check-label">
-                                        I agree all statements in <a href="#!" class="text-body"><u>Terms of service</u></a>
-                                    </label>
+                                    {{ form.confirm(class="form-control form-control-lg", placeholder="Confirm Password") }}
                                 </div>
 
                                 <div class="d-flex justify-content-center">
-                                    <button type="button"
-                                            class="btn btn-success btn-block btn-lg gradient-custom-4 text-body">
-                                        Register
-                                    </button>
+                                    {{ form.submit(class="btn btn-success btn-block btn-lg gradient-custom-4 text-body") }}
                                 </div>
 
                                 <p class="text-center text-muted mt-5 mb-0">
-                                    Have already an account? <a href="Login.html" class="fw-bold text-body"><u>Login
-                                    here</u></a>
+                                    Already have an account? <a href="/login" class="fw-bold text-body"><u>Login here</u></a>
                                 </p>
                             </form>
 
