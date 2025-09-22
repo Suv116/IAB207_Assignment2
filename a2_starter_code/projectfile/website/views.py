@@ -1,4 +1,5 @@
-from flask import Blueprint, render_template
+from flask import Blueprint, render_template, redirect
+from flask_login import login_required, logout_user
 
 main_bp = Blueprint('main', __name__)
 
@@ -46,3 +47,9 @@ def login():
 @main_bp.route('/signup')
 def signup():
     return render_template('Signup.html')
+
+@main_bp.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect('index.html')
