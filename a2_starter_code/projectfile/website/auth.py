@@ -37,7 +37,6 @@ def login():
 
 @auth_bp.route("/signup", methods=["GET", "POST"])
 def signup():
-    # Don’t let logged-in users register again
     if current_user.is_authenticated:
         return redirect(url_for("main.index"))
 
@@ -45,10 +44,9 @@ def signup():
     if form.validate_on_submit():
         username = form.user_name.data
         email = form.email.data
-        phone = getattr(form, "phone_number", None)
+        phone_number = form.phone_number.data
         password = form.password.data
 
-        # Check if user already exists
         existing_user = db.session.scalar(
             db.select(User).where(User.username == username)
         )
@@ -63,7 +61,7 @@ def signup():
         new_user = User(
             username=username,
             email=email,
-            phone_number=phone.data if phone else "N/A",  # fallback if no field in form
+            phone_number=phone_number,
             password_hash=hashed_password
         )
 

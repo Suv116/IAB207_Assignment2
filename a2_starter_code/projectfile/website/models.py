@@ -4,9 +4,8 @@ from flask_login import UserMixin
 from . import db
 
 
-# -------------------------
+
 # User Model
-# -------------------------
 class User(db.Model, UserMixin):
     __tablename__ = "users"
 
@@ -28,9 +27,7 @@ class User(db.Model, UserMixin):
     )
 
 
-# -------------------------
 # Event Status Enum
-# -------------------------
 class EventStatus(enum.Enum):
     OPEN = "open"
     SOLD_OUT = "sold out"
@@ -38,9 +35,7 @@ class EventStatus(enum.Enum):
     INACTIVE = "inactive"
 
 
-# -------------------------
 # Event Model
-# -------------------------
 class Event(db.Model):
     __tablename__ = "events"
 
@@ -67,9 +62,7 @@ class Event(db.Model):
     )
 
 
-# -------------------------
 # Ticket Model
-# -------------------------
 class Ticket(db.Model):
     __tablename__ = "tickets"
 
@@ -87,9 +80,8 @@ class Ticket(db.Model):
     )
 
 
-# -------------------------
+
 # Comment Model
-# -------------------------
 class Comment(db.Model):
     __tablename__ = "comments"
 
@@ -106,9 +98,7 @@ class Comment(db.Model):
     event = db.relationship("Event", back_populates="comments")
 
 
-# -------------------------
 # Order Model
-# -------------------------
 class Order(db.Model):
     __tablename__ = "orders"
 
