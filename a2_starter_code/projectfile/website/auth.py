@@ -1,9 +1,13 @@
 from flask import Blueprint, flash, render_template, request, url_for, redirect
 from flask_bcrypt import generate_password_hash, check_password_hash
 from flask_login import login_user, logout_user, login_required, current_user
-from .models import User
+from wtforms.fields import datetime
+
+from .models import User, OrganisationType, Genre
 from .forms import LoginForm, RegisterForm
 from . import db
+from .forms import EventForm
+from .models import Event, Ticket
 
 
 # Create a blueprint - make sure all BPs have unique names
@@ -13,7 +17,7 @@ auth_bp = Blueprint('auth', __name__)
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for("main.index"))  # already logged in
+        return redirect(url_for(" "))  # already logged in
 
     form = LoginForm()
     if form.validate_on_submit():
@@ -72,3 +76,5 @@ def signup():
         return redirect(url_for("auth.login"))
 
     return render_template("signup.html", form=form, heading="Sign Up")
+
+

@@ -36,21 +36,45 @@ class EventStatus(enum.Enum):
 
 
 # Event Model
+class OrganisationType(enum.Enum):
+    INDEPENDENT = "independent"
+    BAND = "band"
+    LABEL = "label"
+    PROMOTER = "promoter"
+
+class Genre(enum.Enum):
+    GRUNGE = "grunge"
+    METAL = "metal"
+    TRIBUTE = "tribute"
+    CLASSIC = "classic"
+    SEVENTIES = "70s"
+    EIGHTIES = "80s"
+    NINETIES = "90s"
+    TWO_THOUSANDS = "00s"
+    SOUTHERN = "southern"
+    PSYCHEDELIC = "psychedlic"
+
+
 class Event(db.Model):
     __tablename__ = "events"
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
+    attendees = db.Column(db.Integer, nullable=True)
+    organisation = db.Column(db.Enum(OrganisationType), nullable=True)
+    event_date = db.Column(db.Date, nullable=False)
+    start_time = db.Column(db.Time, nullable=False)
+    end_time = db.Column(db.Time, nullable=False)
+    genre = db.Column(db.Enum(Genre), nullable=True)
+    venue = db.Column(db.String(255), nullable=False)
     description = db.Column(db.Text, nullable=True)
-    date = db.Column(db.DateTime, default=datetime.utcnow)
-    status = db.Column(db.Enum(EventStatus), nullable=False, default=EventStatus.OPEN)
-    photo = db.Column(db.String(255), nullable=True)
+    status = db.Column(db.Enum(EventStatus), default=EventStatus.OPEN, nullable=False)
+    photo = db.Column(db.String(255), nullable=True)  # Main image
 
-    # Foreign key to User
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
-    creator = db.relationship("User", back_populates="events")  # matches User.events
+    creator = db.relationship("User", back_populates="events")
 
-    # Relationships
     tickets = db.relationship(
         "Ticket", back_populates="event", lazy=True, cascade="all, delete-orphan"
     )
@@ -60,6 +84,19 @@ class Event(db.Model):
     orders = db.relationship(
         "Order", back_populates="event", lazy=True, cascade="all, delete-orphan"
     )
+
+    images = db.relationship(
+        "EventImage", back_populates="event", lazy=True, cascade="all, delete-orphan"
+    )
+
+class EventImage(db.Model):
+    __tablename__ = "event_images"
+
+    id = db.Column(db.Integer, primary_key=True)
+    event_id = db.Column(db.Integer, db.ForeignKey("events.id"), nullable=False)
+    filename = db.Column(db.String(255), nullable=False)
+
+    event = db.relationship("Event", back_populates="images")
 
 
 # Ticket Model

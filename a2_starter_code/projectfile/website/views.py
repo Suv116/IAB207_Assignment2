@@ -4,13 +4,22 @@ from flask_bcrypt import generate_password_hash
 from .forms import RegisterForm
 from .models import User
 from . import db
+from .models import Event
 
 main_bp = Blueprint('main', __name__)
 
 # Home page
 @main_bp.route('/')
 def index():
-    return render_template('index.html')
+    trending_events = Event.query.order_by(Event.event_date.asc()).limit(6).all()
+    upcoming_events = Event.query.order_by(Event.event_date.asc()).offset(6).limit(6).all()
+
+    return render_template(
+        "index.html",
+        trending_events=trending_events,
+        upcoming_events=upcoming_events
+    )
+
 
 # Events page
 @main_bp.route('/events')
@@ -18,15 +27,11 @@ def events():
     return render_template('events.html')
 
 # Event details page
-@main_bp.route('/details')
-def details():
-    return render_template('details.html')
+@main_bp.route('/details/<int:event_id>')
+def details(event_id):
+    event = Event.query.get_or_404(event_id)
+    return render_template('details.html', event=event)
 
-# Create event page
-@main_bp.route('/create-event')
-@login_required
-def create_event():
-    return render_template('CreateEvent.html')
 
 # Update event page
 @main_bp.route('/update-event')

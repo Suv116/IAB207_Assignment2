@@ -2,7 +2,7 @@
 
 {% block content %}
 <div class="container mt-5">
-<div class="concert-section mask d-flex align-items-center h-100 gradient-custom-3">
+    <div class="concert-section mask d-flex align-items-center h-100 gradient-custom-3">
         <div class="container h-100">
             <div class="row justify-content-center align-items-center h-100">
                 <div class="col-md-8 mx-auto">
@@ -10,127 +10,91 @@
                         <div class="card-body p-5">
                             <h2 class="text-center mb-5">Create a Rock Concert</h2>
 
-                            <form>
+                            <form method="POST" action="{{ url_for('event.create_event') }}"
+                                  enctype="multipart/form-data">
                                 <!-- Concert Name -->
                                 <div class="section-header">Concert Name</div>
-                                <div class="form-outline mb-4">
-                                    <input type="text" class="form-control form-control-lg" placeholder="Concert Name"/>
-                                </div>
+                                <input type="text" name="title" class="form-control form-control-lg"
+                                       placeholder="Concert Name"/>
 
                                 <!-- Expected Attendees -->
                                 <div class="section-header">Expected Attendees</div>
-                                <div class="form-outline mb-4">
-                                    <input type="number" class="form-control form-control-lg"
-                                           placeholder="Expected number of attendees"/>
-                                </div>
+                                <input type="number" name="attendees" class="form-control form-control-lg"
+                                       placeholder="Expected number of attendees"/>
 
                                 <!-- Organisation Type -->
                                 <div class="section-header">Organisation Type</div>
-                                <div class="form-outline mb-4">
-                                    <select class="form-control form-control-lg">
-                                        <option selected disabled>What best describes your organisation?</option>
-                                        <option value="independent">Independent Artist</option>
-                                        <option value="band">Band</option>
-                                        <option value="label">Music Label</option>
-                                        <option value="promoter">Event Promoter</option>
-                                    </select>
-                                </div>
+                                <select name="organisation" class="form-control form-control-lg">
+                                    <option selected disabled>What best describes your organisation?</option>
+                                    <option value="independent">Independent Artist</option>
+                                    <option value="band">Band</option>
+                                    <option value="label">Music Label</option>
+                                    <option value="promoter">Event Promoter</option>
+                                </select>
 
                                 <!-- Date -->
                                 <div class="section-header">Date</div>
-                                <div class="form-outline mb-4">
-                                    <input type="date" class="form-control form-control-lg"/>
-                                </div>
+                                <input type="date" name="date" class="form-control form-control-lg"/>
 
                                 <!-- Start Time -->
                                 <div class="section-header">Start Time</div>
-                                <div class="form-outline mb-4">
-                                    <input type="time" class="form-control form-control-lg"/>
-                                </div>
+                                <input type="time" name="start_time" class="form-control form-control-lg"/>
 
                                 <!-- End Time -->
                                 <div class="section-header">End Time</div>
-                                <div class="form-outline mb-4">
-                                    <input type="time" class="form-control form-control-lg"/>
-                                </div>
+                                <input type="time" name="end_time" class="form-control form-control-lg"/>
 
-                                <!-- Genres Dropdown -->
+                                <!-- Genres -->
                                 <div class="section-header">Genre</div>
-                                <div class="form-outline mb-4">
-                                    <select class="form-control form-control-lg">
-                                        <option selected disabled>Select genre</option>
-                                        <option value="grunge">Grunge</option>
-                                        <option value="metal">Metal</option>
-                                        <option value="tribute">Tribute</option>
-                                        <option value="classic">Classic</option>
-                                        <option value="70s">70s</option>
-                                        <option value="80s">80s</option>
-                                        <option value="90s">90s</option>
-                                        <option value="00s">00s</option>
-                                        <option value="southern">Southern</option>
-                                        <option value="psychedlic">Psychedlic</option>
-                                    </select>
-                                </div>
+                                <select name="genre" class="form-control form-control-lg">
+                                    <option selected disabled>Select genre</option>
+                                    <option value="grunge">Grunge</option>
+                                    <option value="metal">Metal</option>
+                                    <option value="tribute">Tribute</option>
+                                    <option value="classic">Classic</option>
+                                    <option value="70s">70s</option>
+                                    <option value="80s">80s</option>
+                                    <option value="90s">90s</option>
+                                    <option value="00s">00s</option>
+                                    <option value="southern">Southern</option>
+                                    <option value="psychedlic">Psychedlic</option>
+                                </select>
 
                                 <!-- Ticket Price -->
                                 <div class="section-header">Ticket Price</div>
-                                <div id="ticket-prices">
-                                    <div class="form-outline mb-3">
-                                        <input type="text" class="form-control form-control-lg mb-2"
-                                               placeholder="Ticket type (e.g. General Admission)"/>
-                                        <input type="number" class="form-control form-control-lg"
-                                               placeholder="Price ($)"/>
-                                    </div>
-                                </div>
+                                <input type="text" name="ticket_type" class="form-control form-control-lg mb-2"
+                                       placeholder="Ticket type (e.g. General Admission)"/>
+                                <input type="number" name="price" class="form-control form-control-lg"
+                                       placeholder="Price ($)"/>
 
-                                <!-- Add more ticket types -->
-                                <div class="mb-4">
-                                    <button type="button" class="btn btn-sm btn-outline-dark">
-                                        + Add another ticket type
-                                    </button>
-                                </div>
                                 <!-- Venue -->
                                 <div class="section-header">Venue</div>
-                                <div class="form-outline mb-4">
-                                    <input type="text" class="form-control form-control-lg"
-                                           placeholder="Venue location"/>
-                                </div>
+                                <input type="text" name="venue" class="form-control form-control-lg"
+                                       placeholder="Venue location"/>
 
                                 <!-- Description -->
                                 <div class="section-header">Description</div>
-                                <div class="form-outline mb-4">
-                                <textarea class="form-control form-control-lg" rows="3"
+                                <textarea name="description" class="form-control form-control-lg" rows="3"
                                           placeholder="Concert description"></textarea>
-                                </div>
 
-                                <!-- Upload Images -->
-                                <div class="section-header">Images</div>
-                                <div class="form-outline mb-4">
-                                    <label class="form-label">Upload Concert Images</label>
-                                    <input type="file" class="form-control form-control-lg" multiple/>
-                                </div>
+                                <!-- Main Img -->
+                                <div class="section-header">Main Image</div>
+                                <input type="file" name="photo" class="form-control form-control-lg"/>
 
-                                <!-- Terms -->
-                                <div class="section-header">Confirmation</div>
-                                <div class="form-check d-flex justify-content-center mb-5">
-                                    <input class="form-check-input me-2" type="checkbox"/>
-                                    <label class="form-check-label">
-                                        I confirm that all concert details are accurate
-                                    </label>
-                                </div>
+                                <!-- Carousel Img -->
+                                <div class="section-header">Carousel Images</div>
+                                <input type="file" name="carousel_images" class="form-control form-control-lg"
+                                       multiple/>
 
                                 <!-- Submit -->
-                                <div class="d-flex justify-content-center">
+                                <div class="d-flex justify-content-center mt-4">
                                     <button type="submit"
                                             class="btn btn-success btn-block btn-lg gradient-custom-4 text-body">
                                         Create Concert
                                     </button>
                                 </div>
-                                <hr>
-                                <p class="text-center">After submitting your create concert request a member of our team
-                                    will review it <br>
-                                    and contact you for more information</p>
                             </form>
+
 
                         </div>
                     </div>
@@ -138,5 +102,5 @@
             </div>
         </div>
     </div>
-  </div>
+</div>
 {% endblock %}}

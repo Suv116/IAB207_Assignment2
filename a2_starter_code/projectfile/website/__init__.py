@@ -1,5 +1,7 @@
 # import flask - from 'package' import 'Class'
-from flask import Flask 
+import os
+
+from flask import Flask
 from flask_bootstrap import Bootstrap5
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
@@ -16,6 +18,9 @@ def create_app():
     app.secret_key = 'somesecretkey'
     # set the app configuration data 
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sitedata.sqlite'
+
+    app.config["UPLOAD_FOLDER"] = os.path.join(app.root_path, 'static/uploads')
+
     # initialise db with flask app
     db.init_app(app)
 
@@ -41,5 +46,8 @@ def create_app():
 
     from . import auth
     app.register_blueprint(auth.auth_bp)
+
+    from . import event
+    app.register_blueprint(event.event_bp)
     
     return app
