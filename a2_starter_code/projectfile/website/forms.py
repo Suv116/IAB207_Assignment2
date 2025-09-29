@@ -50,3 +50,7 @@ class EventForm(FlaskForm):
     price = FloatField("Ticket Price", validators=[DataRequired()])
     venue = StringField("Venue", validators=[DataRequired()])
     submit = SubmitField("Create Concert")
+
+class CommentForm(FlaskForm):
+    content = TextAreaField("Comment", validators=[DataRequired(), Length(max=500)])
+    submit = SubmitField("Post Comment")

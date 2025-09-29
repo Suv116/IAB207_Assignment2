@@ -3,10 +3,9 @@ import os
 from flask import Blueprint, flash, render_template, request, url_for, redirect, current_app
 from flask_login import login_required, current_user
 from datetime import datetime
-
 from werkzeug.utils import secure_filename
 
-from .models import User, OrganisationType, Genre, Event, Ticket, EventImage
+from .models import User, OrganisationType, Genre, Event, Ticket, EventImage, Comment
 from . import db
 
 event_bp = Blueprint("event", __name__)
@@ -80,3 +79,27 @@ def create_event():
             flash(f"Error creating concert: {str(e)}", "danger")
 
     return render_template("CreateEvent.html")
+
+@event_bp.route("/event/<int:event_id>/comment", methods=["POST"])
+@login_required
+def add_comment(event_id):
+    content = request.form.get("content")
+
+    if not content or content.strip() == "":
+        flash("Comment cannot be empty.", "danger")
+        return redirect(url_for("main.details", event_id=event_id))
+
+    # Ensure event exists
+    event = Event.query.get_or_404(event_id)
+
+    # Create comment
+    comment = Comment(
+        content=content.strip(),
+        user_id=current_user.id,
+        event_id=event.id
+    )
+    db.session.add(comment)
+    db.session.commit()
+
+    flash("Comment added successfully!", "success")
+    return redirect(url_for("main.details", event_id=event.id))

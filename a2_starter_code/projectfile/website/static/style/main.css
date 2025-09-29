@@ -47,7 +47,6 @@ h1, h2, h3, h4, h5, h6 {
 
 .event-card {
     background-color: #e5dcc5; /* light beige/tan */
-    border: none; /* optional: remove default border */
 }
 
 .event-card .card-title {

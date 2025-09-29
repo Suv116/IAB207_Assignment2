@@ -15,15 +15,14 @@
           rel="stylesheet">
 
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="static/style/main.css">
+<link rel="stylesheet" href="{{ url_for('static', filename='style/main.css') }}">
 </head>
 <body>
 
 <!-- Header -->
 <div class="container-fluid my-0 py-3 text-white" style="background-color: #C14953;">
     <div class="d-flex align-items-center">
-        <img src="static/logo.png" alt="Logo"
-             class="img-fluid me-3" style="max-width: 120px; height: auto;">
+<img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="img-fluid me-3" style="max-width: 120px; height: auto;">
         <div>
             <h1 class="mb-1">LiveWire</h1>
             <p class="mb-0">Your one and only website for any concert tickets of the rock variety</p>
@@ -69,7 +68,7 @@
                     <input type="text" class="form-control mb-2 mb-sm-0 rounded-start" placeholder="Search events" aria-label="Search" style="min-width: 200px;">
                     <input type="text" class="form-control mb-2 mb-sm-0" placeholder="Location" aria-label="Location" style="min-width: 200px;">
                     <button class="btn rounded-end p-1 p-sm-2" type="submit" style="background: #4C4C47;">
-                        <img class="search-icon img-fluid" src="static/search.png" alt="Search" style="height: 1.5em;">
+<img class="search-icon img-fluid" src="{{ url_for('static', filename='search.png') }}" alt="Search" style="height: 1.5em;">
                     </button>
                 </div>
             </form>

@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, logout_user, current_user
 from flask_bcrypt import generate_password_hash
 from .forms import RegisterForm
-from .models import User
+from .models import User, Comment
 from . import db
 from .models import Event
 
@@ -30,7 +30,8 @@ def events():
 @main_bp.route('/details/<int:event_id>')
 def details(event_id):
     event = Event.query.get_or_404(event_id)
-    return render_template('details.html', event=event)
+    comments = Comment.query.filter_by(event_id=event.id).order_by(Comment.created_at.desc()).all()
+    return render_template("details.html", event=event, comments=comments)
 
 
 # Update event page
@@ -57,3 +58,5 @@ def history():
 def logout():
     logout_user()
     return redirect(url_for('main.index'))
+
+
