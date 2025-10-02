@@ -27,10 +27,11 @@ class RegisterForm(FlaskForm):
         ]
     )
 
-    # linking two fields - password should be equal to data entered in confirm
-    password = PasswordField("Password", validators=[InputRequired(),
-                                                     EqualTo('confirm', message="Passwords should match")])
-    confirm = PasswordField("Confirm Password")
+    # Password criteria
+    password = PasswordField("Password", validators=[InputRequired(), Length(min=6)])
+
+    # linking two fields - password should be equal to data entered in confirm                                                    
+    confirm = PasswordField("Confirm Password", validators=[InputRequired(), EqualTo('password', message="Passwords should match")])
 
     # submit button
     submit = SubmitField("Register")
