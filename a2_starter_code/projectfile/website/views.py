@@ -26,7 +26,7 @@ def index():
 def events():
     return render_template('events.html')
 
-# Event details page
+# Event detail page
 @main_bp.route('/details/<int:event_id>')
 def details(event_id):
     event = Event.query.get_or_404(event_id)

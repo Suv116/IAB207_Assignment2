@@ -5,6 +5,12 @@ from flask import Flask
 from flask_bootstrap import Bootstrap5
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
+from flask import Flask
+
+from app import app
+
+app.jinja_env.auto_reload = True
+
 
 db = SQLAlchemy()
 
@@ -12,13 +18,13 @@ db = SQLAlchemy()
 # a web server will run this web application
 def create_app():
   
-    app = Flask(__name__)  # this is the name of the module/package that is calling this app
+    app = Flask(__name__, template_folder="templates")  # this is the name of the module/package that is calling this app
     # Should be set to false in a production environment
     app.debug = True
     app.secret_key = 'somesecretkey'
     # set the app configuration data 
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sitedata.sqlite'
-
+    app.config['TEMPLATES_AUTO_RELOAD'] = True
     app.config["UPLOAD_FOLDER"] = os.path.join(app.root_path, 'static/uploads')
 
     # initialise db with flask app
