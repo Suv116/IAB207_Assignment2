@@ -76,7 +76,7 @@ def create_event():
 
         except Exception as e:
             db.session.rollback()
-            flash(f"Error creating concert: {str(e)}", "danger")
+            flash("Error creating event. Please check your information and try again.", "danger")
 
     return render_template("CreateEvent.html")
 

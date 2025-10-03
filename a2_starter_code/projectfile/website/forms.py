@@ -32,7 +32,7 @@ class RegisterForm(FlaskForm):
             InputRequired(), 
             Length(min=6),
             Regexp(
-                regex=r'^(?=.\d)(?=.[!@#$%^&*(),.?":{}|<>]).+$',
+                regex=r'^(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).+$',
                 message="Password must contain at least one number and one special character"
             )           
         ]

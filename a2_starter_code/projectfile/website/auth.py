@@ -57,6 +57,8 @@ def signup():
         if existing_user:
             flash("Username already exists", "danger")
             return redirect(url_for("auth.signup"))
+        
+    
 
         # Hash password
         hashed_password = generate_password_hash(password).decode("utf-8")

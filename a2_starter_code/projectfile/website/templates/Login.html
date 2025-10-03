@@ -12,10 +12,12 @@
                             <h2 class="text-center mb-3">Login</h2>
                             <p class="text-center mb-5">Please enter your username and password</p>
 
-                            <!-- flash error messages -->
-                            {% for message in get_flashed_messages()%}
-                            <div class="alert alert-danger">{{ message }}</div>
-                            {% endfor %}
+                            <!-- flash messages -->
+                            {% for category, message in get_flashed_messages(with_categories=true) %}
+                               <div class="alert alert-{{ category }}" role="alert">
+                               {{ message }}
+                               </div>
+                               {% endfor %}
 
                            
                             <form method="POST">
