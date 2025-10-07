@@ -3,7 +3,6 @@ from wtforms import DateTimeLocalField, SelectField, FloatField
 from wtforms.fields import TextAreaField, SubmitField, StringField, PasswordField
 from wtforms.validators import InputRequired, Length, Email, EqualTo, Regexp, DataRequired
 
-
 # creates the login information
 class LoginForm(FlaskForm):
     user_name = StringField("User Name", validators=[InputRequired('Enter user name')])
@@ -27,10 +26,20 @@ class RegisterForm(FlaskForm):
         ]
     )
 
-    # linking two fields - password should be equal to data entered in confirm
-    password = PasswordField("Password", validators=[InputRequired(),
-                                                     EqualTo('confirm', message="Passwords should match")])
-    confirm = PasswordField("Confirm Password")
+    # Password criteria
+    password = PasswordField("Password", 
+        validators=[
+            InputRequired(), 
+            Length(min=6),
+            Regexp(
+                regex=r'^(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).+$',
+                message="Password must contain at least one number and one special character"
+            )           
+        ]
+    )
+
+    # linking two fields - password should be equal to data entered in confirm                                                    
+    confirm = PasswordField("Confirm Password", validators=[InputRequired(), EqualTo('password', message="Passwords should match")])
 
     # submit button
     submit = SubmitField("Register")

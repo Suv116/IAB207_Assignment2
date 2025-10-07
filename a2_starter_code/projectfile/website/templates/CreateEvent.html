@@ -12,6 +12,13 @@
 
                             <form method="POST" action="{{ url_for('event.create_event') }}"
                                   enctype="multipart/form-data">
+
+                               {% for category, message in get_flashed_messages(with_categories=true) %}
+                                  <div class="alert alert-{{ category }}" role="alert">
+                                       {{ message }}
+                                  </div>
+                               {% endfor %}
+
                                 <!-- Concert Name -->
                                 <div class="section-header">Concert Name</div>
                                 <input type="text" name="title" class="form-control form-control-lg"
