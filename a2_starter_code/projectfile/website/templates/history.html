@@ -4,9 +4,19 @@
 <div class="container mt-5">
     <div class="container mt-5 text-center">
         <h2 class="mb-4">My Bookings</h2>
+
+        <!-- Dynamic tab section -->
         <div class="d-inline-flex booking-buttons">
-            <button class="btn btn-dark btn-sm me-2">Past Bookings</button>
-            <a href="UpcomingEvent.html" class="btn btn-outline-dark btn-sm">Upcoming Bookings</a>
+            <a href="{{ url_for('event.history_view') }}" 
+               class="btn btn-sm me-2 {% if active_tab == 'past' %}btn-dark{% else %}btn-outline-dark{% endif %}" 
+               style="color: white">
+               Past Bookings
+            </a>
+            <a href="{{ url_for('main.upcoming_event') }}" 
+               class="btn btn-sm {% if active_tab == 'upcoming' %}btn-dark{% else %}btn-outline-dark{% endif %}" 
+               style="color: white">
+               Upcoming Bookings
+            </a>
         </div>
     </div>
 
@@ -25,7 +35,6 @@
                             <hr class="section-divider">
                             <p class="order">ORDER #32-14532</p>
                             <p class="status">Status: Inactive</p>
-
                         </div>
                     </li>
 
@@ -37,7 +46,6 @@
                             <hr class="section-divider">
                             <p class="order">ORDER #32-14533</p>
                             <p class="status">Status: Inactive</p>
-
                         </div>
                     </li>
 
@@ -49,7 +57,6 @@
                             <hr class="section-divider">
                             <p class="order">ORDER #32-14534</p>
                             <p class="status">Status: Inactive</p>
-
                         </div>
                     </li>
 
@@ -61,7 +68,6 @@
                             <hr class="section-divider">
                             <p class="order">ORDER #32-14535</p>
                             <p class="status">Status: Inactive</p>
-
                         </div>
                     </li>
 
@@ -73,7 +79,6 @@
                             <hr class="section-divider">
                             <p class="order">ORDER #32-14536</p>
                             <p class="status">Status: Inactive</p>
-
                         </div>
                     </li>
 
@@ -85,7 +90,6 @@
                             <hr class="section-divider">
                             <p class="order">ORDER #32-14537</p>
                             <p class="status">Status: Inactive</p>
-
                         </div>
                     </li>
 

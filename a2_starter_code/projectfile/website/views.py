@@ -50,7 +50,7 @@ def upcoming_event():
 @main_bp.route('/history')
 @login_required
 def history():
-    return render_template('History.html')
+    return render_template('history.html')
 
 # Logout
 @main_bp.route('/logout')

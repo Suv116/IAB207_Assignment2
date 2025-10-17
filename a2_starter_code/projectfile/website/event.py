@@ -1,12 +1,11 @@
 import os
-
 from flask import Blueprint, flash, render_template, request, url_for, redirect, current_app
 from flask_login import login_required, current_user
 from datetime import datetime
 from werkzeug.utils import secure_filename
-
-from .models import User, OrganisationType, Genre, Event, Ticket, EventImage, Comment
+from .models import Event, Ticket, Order, User, OrganisationType, Genre, EventImage, Comment
 from . import db
+
 
 event_bp = Blueprint("event", __name__)
 
@@ -78,7 +77,7 @@ def create_event():
             db.session.rollback()
             flash("Error creating event. Please check your information and try again.", "danger")
 
-    return render_template("CreateEvent.html")
+    return render_template("createEvent.html")
 
 @event_bp.route("/event/<int:event_id>/comment", methods=["POST"])
 @login_required
@@ -103,3 +102,66 @@ def add_comment(event_id):
 
     flash("Comment added successfully!", "success")
     return redirect(url_for("main.details", event_id=event.id))
+
+# Route for Event Details 
+@event_bp.route("/event/<int:event_id>", endpoint="event_details")
+@login_required
+def event_details(event_id):
+    event = Event.query.get_or_404(event_id)
+    tickets = event.tickets
+    user_orders = Order.query.filter_by(user_id=current_user.id, event_id=event.id).all()
+    return render_template("details.html", event=event, tickets=tickets, user_orders=user_orders)
+
+# Route for Book Tickets
+@event_bp.route("/book_tickets/<int:event_id>", methods=["POST"])
+@login_required
+def book_tickets(event_id):
+    event = Event.query.get_or_404(event_id)
+    tickets = event.tickets
+
+    total_tickets = 0
+
+    for ticket in tickets:
+        qty = int(request.form.get(f"ticket_{ticket.id}", 0))
+        if qty > 0:
+            total_tickets += qty
+            order = Order(
+                user_id=current_user.id,
+                event_id=event.id,
+                ticket_id=ticket.id,
+                quantity=qty,
+                price=ticket.price * qty,
+                order_date=datetime.utcnow()
+            )
+            db.session.add(order)
+
+    if total_tickets == 0:
+        flash("Please select at least one ticket to book.", "warning")
+        return redirect(url_for("event.event_details", event_id=event.id))
+
+    db.session.commit()
+    flash("Tickets booked successfully!", "success")
+
+    return redirect(url_for("event.event_details", event_id=event.id))
+
+# Upcoming Events Route
+@event_bp.route("/upcoming", endpoint="upcoming")
+@login_required
+def upcoming_view():
+    """Shows only the user's future event bookings."""
+    user_orders = Order.query.filter_by(user_id=current_user.id).all()
+    event_ids = {order.event_id for order in user_orders}
+
+    # Only events whose date is in the future or today
+    events = Event.query.filter(
+        Event.id.in_(event_ids),
+        Event.event_date >= datetime.now().date()
+    ).order_by(Event.event_date.asc()).all()
+
+    return render_template("UpcomingEvent.html", events=events)
+# Route for Past Bookings
+@event_bp.route("/history")
+def history_view():
+    events = get_past_events()  # your logic to fetch past bookings
+    return render_template("history.html", events=events, active_tab="past")
+
