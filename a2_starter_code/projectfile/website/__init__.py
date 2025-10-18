@@ -7,11 +7,6 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager
 from flask import Flask
 
-# from app import app
-
-# app.jinja_env.auto_reload = True
-
-
 db = SQLAlchemy()
 
 # create a function that creates a web application

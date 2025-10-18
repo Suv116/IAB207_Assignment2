@@ -70,7 +70,7 @@ def update_event():
                 return redirect(url_for('main.update_event', event_id=selected_event.id))
 
 
-          # Ticket Change
+        # Ticket Change
         ticket_type = request.form.get('ticket_type') or "General Admission"
         ticket_price = request.form.get('ticket_price')
 
