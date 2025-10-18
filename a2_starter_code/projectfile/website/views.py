@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, logout_user, current_user
 from flask_bcrypt import generate_password_hash
 from .forms import RegisterForm
-from .models import User, Comment, Ticket
+from .models import User, Comment, Ticket, Genre
 from . import db
 from .models import Event
 import datetime
@@ -57,7 +57,13 @@ def update_event():
         selected_event.title = title
         selected_event.description = request.form.get('description')
         selected_event.venue = request.form.get('venue')
-        selected_event.genre = request.form.get('genre')
+        genre_type = request.form.get('genre')
+        if genre_type:
+            try:
+                selected_event.genre = Genre(genre_type)
+            except KeyError:
+                flash('Invalid genre selected.', 'danger')
+                return redirect(url_for('main.update_event', event_id=selected_event.id))
 
 
           # Ticket Change

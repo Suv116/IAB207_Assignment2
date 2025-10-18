@@ -48,6 +48,9 @@
                 <p><strong>Date:</strong> {{ event.event_date.strftime('%A, %b %d, %Y') }}</p>
                 <p><strong>Time:</strong> {{ event.start_time.strftime('%I:%M %p') }} – {{
                     event.end_time.strftime('%I:%M %p') }}</p>
+                    {% if event.genre %}
+                <p><strong>Genre:</strong> {{ event.genre.value|capitalize }}</p>{% endif %}
+
                 <p><strong>Venue:</strong> {{ event.venue }}</p>
                 <p><strong>Status:</strong> {{ event.status.value|capitalize }}</p>
 

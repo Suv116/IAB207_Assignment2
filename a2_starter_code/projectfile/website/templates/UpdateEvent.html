@@ -87,7 +87,10 @@
                                         <option selected disabled>Select genre</option>
                                         {% set genres = ['grunge', 'metal', 'tribute', 'classic', '70s', '80s', '90s', '00s', 'southern', 'psychedelic'] %}
                                         {% for genre in genres %}
-                                            <option value="{{ genre }}" {% if selected_event and selected_event.genre == genre %}selected{% endif %}</option>
+                                            <option value="{{ genre }}"
+                                                {% if selected_event and selected_event.genre and selected_event.genre.value == genre %}selected{% endif %}>
+                                                {{ genre|capitalize }}
+                                            </option>
                                         {% endfor %}
                                     </select>
                                 </div>
