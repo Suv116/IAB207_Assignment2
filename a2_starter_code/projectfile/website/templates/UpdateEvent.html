@@ -95,13 +95,15 @@
                                     </select>
                                 </div>
 
-                                <!-- Upload Images -->
-                                <div class="section-header">Images</div>
-                                <div class="form-outline mb-4">
-                                    <label class="form-label">Update Concert Images</label>
-                                    <input type="file" class="form-control form-control-lg" name="images" multiple/>
-                                    <small class="text-muted">Leave empty to keep current images</small>
-                                </div>
+                                <!-- Main Image -->
+                                <div class="section-header">Main Image</div>
+                                <input type="file" name="photo" class="form-control form-control-lg"/>
+                                <small class="text-muted">Leave empty to keep current main image</small>
+
+                                <!-- Carousel Images -->
+                                <div class="section-header">Carousel Images</div>
+                                <input type="file" name="carousel_images" class="form-control form-control-lg" multiple/>
+                                <small class="text-muted">Leave empty to keep current carousel images</small>
 
                                 <!-- Important Note -->
                                 <p class="text-muted text-center mb-4">

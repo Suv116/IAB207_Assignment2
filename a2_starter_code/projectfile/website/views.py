@@ -1,11 +1,15 @@
-from flask import Blueprint, render_template, redirect, url_for, flash, request
+from flask import Blueprint, render_template, redirect, url_for, flash, request, url_for, current_app
+from flask_login import login_required, current_user
 from flask_login import login_required, logout_user, current_user
 from flask_bcrypt import generate_password_hash
 from .forms import RegisterForm
-from .models import User, Comment, Ticket, Genre
+from .models import User, Comment, Ticket, Genre, EventImage, Event
 from . import db
-from .models import Event
+from werkzeug.utils import secure_filename
 import datetime
+import os
+
+
 
 main_bp = Blueprint('main', __name__)
 
@@ -102,6 +106,25 @@ def update_event():
                     except ValueError:
                         setattr(selected_event, field, datetime.datetime.strptime(value, "%H:%M").time())
                 changed = True
+
+        # Update main photo
+        photo_file = request.files.get("photo")
+        if photo_file and photo_file.filename:
+            filename = secure_filename(photo_file.filename)
+            photo_file.save(os.path.join(current_app.config["UPLOAD_FOLDER"], filename))
+            selected_event.photo = filename
+
+        # Update carousel images
+        carousel_files = request.files.getlist("carousel_images")
+        if carousel_files and carousel_files[0].filename:
+           
+            EventImage.query.filter_by(event_id=selected_event.id).delete()
+            for f in carousel_files:
+                if f:
+                    filename = secure_filename(f.filename)
+                    f.save(os.path.join(current_app.config["UPLOAD_FOLDER"], filename))
+                    img = EventImage(event_id=selected_event.id, filename=filename)
+                    db.session.add(img)
 
         if changed:
             db.session.commit()
