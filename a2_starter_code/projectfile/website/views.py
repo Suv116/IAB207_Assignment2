@@ -20,11 +20,12 @@ def index():
         upcoming_events=upcoming_events
     )
 
-
 # Events page
 @main_bp.route('/events')
 def events():
-    return render_template('events.html')
+    events = Event.query.order_by(Event.event_date.asc()).all()
+    print("Found events:", events) 
+    return render_template('events.html', events=events)
 
 # Event detail page
 @main_bp.route('/details/<int:event_id>')
