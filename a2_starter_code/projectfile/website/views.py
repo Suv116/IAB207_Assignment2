@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, logout_user, current_user
 from flask_bcrypt import generate_password_hash
 from .forms import RegisterForm
-from .models import User, Comment
+from .models import User, Comment, Ticket
 from . import db
 from .models import Event
 import datetime
@@ -47,8 +47,6 @@ def update_event():
     selected_event = Event.query.filter_by(id=event_id, user_id=current_user.id).first() if event_id else None
 
     if request.method == 'POST' and selected_event:
-       
-        
         title = request.form.get('title')
 
         if not title:
@@ -59,21 +57,52 @@ def update_event():
         selected_event.title = title
         selected_event.description = request.form.get('description')
         selected_event.venue = request.form.get('venue')
-        selected_event.ticket_price = request.form.get('ticket_price')
         selected_event.genre = request.form.get('genre')
 
+
+          # Ticket Change
+        ticket_type = request.form.get('ticket_type') or "General Admission"
+        ticket_price = request.form.get('ticket_price')
+
+        try:
+            price_change = float(ticket_price) if ticket_price else 0.0
+        except ValueError:
+            flash('Invalid ticket price.', 'danger')
+            return redirect(url_for('main.update_event', event_id=selected_event.id))
+
+        ticket = Ticket.query.filter_by(event_id=selected_event.id).first()
+        if ticket:
+            ticket.ticket_type = ticket_type
+            ticket.price = price_change
+        else:
+            ticket = Ticket(ticket_type=ticket_type, price=price_change, event_id=selected_event.id)
+            db.session.add(ticket)
+
         
-        for field, fmt in [('event_date', "%Y-%m-%d"), ('start_time', "%H:%M:%S"), ('end_time', "%H:%M:%S")]:
+        # Date change
+        changed = False
+        for field, fmt in [
+            ('event_date', "%Y-%m-%d"),
+            ('start_time', "%H:%M"),
+            ('end_time', "%H:%M"),
+        ]:
             value = request.form.get(field)
             if value:
-                setattr(selected_event, field, datetime.datetime.strptime(value, fmt).date() if 'date' in field else datetime.datetime.strptime(value, fmt).time())
+                if 'date' in field:
+                    setattr(selected_event, field, datetime.datetime.strptime(value, fmt).date())
+                else:
+                    try:
+                        setattr(selected_event, field, datetime.datetime.strptime(value, "%H:%M:%S").time())
+                    except ValueError:
+                        setattr(selected_event, field, datetime.datetime.strptime(value, "%H:%M").time())
+                changed = True
 
-        db.session.commit()
-        flash('Event updated successfully', 'success')
-        return redirect(url_for('main.update_event', event_id=selected_event.id))
+        if changed:
+            db.session.commit()
+            flash('Event updated successfully', 'success')
+            return redirect(url_for('main.update_event', event_id=selected_event.id))
 
     return render_template('UpdateEvent.html', events=user_events, selected_event=selected_event)
-
 
 # Upcoming events page
 @main_bp.route('/upcoming-event')
