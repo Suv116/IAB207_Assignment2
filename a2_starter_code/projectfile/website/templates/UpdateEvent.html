@@ -9,86 +9,101 @@
                     <div class="card" style="border-radius: 15px;">
                         <div class="card-body p-5">
                             <h2 class="text-center mb-5">Edit Your Event</h2>
+                            
+                                <form method="POST" enctype="multipart/form-data">
+                                <!-- Event Selection -->
+                                <div class="section-header">Select Event</div>
+                                <div class="form-outline mb-4">
+                                    <select class="form-control form-control-lg" id="event_select" name="event_id" onchange="window.location='?event_id=' + this.value;">
+                                        <option value="">-- Select your event --</option>
+                                        {% for event in events %}
+                                            <option value="{{ event.id }}" {% if selected_event and event.id == selected_event.id %}selected{% endif %}>
+                                                {{ event.title }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
 
-                            <form>
-                                <!-- Event Name (read-only) -->
+                                <!-- Event Name -->
                                 <div class="section-header">Event Name</div>
                                 <div class="form-outline mb-4">
-                                    <input type="text" class="form-control form-control-lg" value="My Rock Concert"
-                                           readonly/>
+                                    <input type="text" class="form-control form-control-lg" name="title"
+                                           value="{{ selected_event.title if selected_event else '' }}"/>
                                 </div>
 
                                 <!-- Description -->
                                 <div class="section-header">Description</div>
                                 <div class="form-outline mb-4">
-                                    <textarea class="form-control form-control-lg" rows="3">Exciting concert with live performances...</textarea>
+                                    <textarea class="form-control form-control-lg" name="description" rows="3">{{ selected_event.description if selected_event else '' }}</textarea>
                                 </div>
 
                                 <!-- Date -->
                                 <div class="section-header">Date</div>
                                 <div class="form-outline mb-4">
-                                    <input type="date" class="form-control form-control-lg"/>
+                                    <input type="date" class="form-control form-control-lg" name="event_date"
+                                           value="{{ selected_event.event_date if selected_event else '' }}"/>
                                 </div>
 
                                 <!-- Start Time -->
                                 <div class="section-header">Start Time</div>
                                 <div class="form-outline mb-4">
-                                    <input type="time" class="form-control form-control-lg"/>
+                                    <input type="time" class="form-control form-control-lg" name="start_time"
+                                           value="{{ selected_event.start_time if selected_event else '' }}"/>
                                 </div>
 
                                 <!-- End Time -->
                                 <div class="section-header">End Time</div>
                                 <div class="form-outline mb-4">
-                                    <input type="time" class="form-control form-control-lg"/>
+                                    <input type="time" class="form-control form-control-lg" name="end_time"
+                                           value="{{ selected_event.end_time if selected_event else '' }}"/>
                                 </div>
 
                                 <!-- Venue -->
                                 <div class="section-header">Venue</div>
                                 <div class="form-outline mb-4">
-                                    <input type="text" class="form-control form-control-lg" value="Downtown Arena"/>
+                                    <input type="text" class="form-control form-control-lg" name="venue"
+                                           value="{{ selected_event.venue if selected_event else '' }}"/>
+                                </div>
+
+                                <!-- Ticket Type -->
+                                <div class="section-header">Ticket Type</div>
+                                <div class="form-outline mb-4">
+                                    <input type="text" class="form-control form-control-lg" name="ticket_type"
+                                        placeholder="Ticket type (e.g. General Admission)"
+                                        value="{{ ticket_type if ticket_type is not none else '' }}"/>
                                 </div>
 
                                 <!-- Ticket Price -->
                                 <div class="section-header">Ticket Price</div>
                                 <div class="form-outline mb-4">
-                                    <input type="number" class="form-control form-control-lg"
-                                           placeholder="Ticket price ($)" value="50"/>
+                                    <input type="number" step="0.01" class="form-control form-control-lg" name="ticket_price"
+                                        placeholder="Ticket price ($)" value="{{ ticket_price if ticket_price is not none else '' }}"/>
                                 </div>
 
                                 <!-- Genre Dropdown -->
                                 <div class="section-header">Genre</div>
                                 <div class="form-outline mb-4">
-                                    <select class="form-control form-control-lg">
+                                    <select class="form-control form-control-lg" name="genre">
                                         <option selected disabled>Select genre</option>
-                                        <option value="grunge">Grunge</option>
-                                        <option value="metal">Metal</option>
-                                        <option value="tribute">Tribute</option>
-                                        <option value="classic">Classic</option>
-                                        <option value="70s">70s</option>
-                                        <option value="80s">80s</option>
-                                        <option value="90s">90s</option>
-                                        <option value="00s">00s</option>
-                                        <option value="southern">Southern</option>
-                                        <option value="psychedelic">Psychedelic</option>
+                                        {% set genres = ['grunge', 'metal', 'tribute', 'classic', '70s', '80s', '90s', '00s', 'southern', 'psychedelic'] %}
+                                        {% for genre in genres %}
+                                            <option value="{{ genre }}"
+                                                {% if selected_event and selected_event.genre and selected_event.genre.value == genre %}selected{% endif %}>
+                                                {{ genre|capitalize }}
+                                            </option>
+                                        {% endfor %}
                                     </select>
                                 </div>
 
-                                <!-- Upload Images -->
-                                <div class="section-header">Images</div>
-                                <div class="form-outline mb-4">
-                                    <label class="form-label">Update Concert Images</label>
-                                    <input type="file" class="form-control form-control-lg" multiple/>
-                                    <small class="text-muted">Leave empty to keep current images</small>
-                                </div>
+                                <!-- Main Image -->
+                                <div class="section-header">Main Image</div>
+                                <input type="file" name="photo" class="form-control form-control-lg"/>
+                                <small class="text-muted">Leave empty to keep current main image</small>
 
-                                <!-- Cancel Event -->
-                                <div class="section-header">Cancel Event</div>
-                                <div class="form-check d-flex justify-content-center mb-4">
-                                    <input class="form-check-input me-2" type="checkbox"/>
-                                    <label class="form-check-label">
-                                        Cancel this event
-                                    </label>
-                                </div>
+                                <!-- Carousel Images -->
+                                <div class="section-header">Carousel Images</div>
+                                <input type="file" name="carousel_images" class="form-control form-control-lg" multiple/>
+                                <small class="text-muted">Leave empty to keep current carousel images</small>
 
                                 <!-- Important Note -->
                                 <p class="text-muted text-center mb-4">
@@ -101,9 +116,19 @@
                                             class="btn btn-success btn-block btn-lg gradient-custom-4 text-body">
                                         Save Changes
                                     </button>
-                                </div>
                             </form>
 
+                            <!-- Cancel Event -->
+                            {% if selected_event %}
+                            <form method="POST" action="{{ url_for('main.delete_event', event_id=selected_event.id) }}">
+                                <button type="submit"
+                                        class="btn btn-danger btn-block btn-lg text-body"
+                                        onclick="return confirm('Are you sure you want to cancel this event?');">
+                                    Cancel This Event
+                                </button>
+                            </form>
+                            {% endif %}
+                            
                         </div>
                     </div>
                 </div>
