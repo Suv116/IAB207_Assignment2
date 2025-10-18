@@ -133,6 +133,22 @@ def update_event():
 
     return render_template('UpdateEvent.html', events=user_events, selected_event=selected_event)
 
+@main_bp.route('/delete-event/<int:event_id>', methods=['POST'])
+@login_required
+def delete_event(event_id):
+    event = Event.query.filter_by(id=event_id, user_id=current_user.id).first_or_404()
+    
+    # Delete info and images
+    Ticket.query.filter_by(event_id=event.id).delete()
+    EventImage.query.filter_by(event_id=event.id).delete()
+    
+    db.session.delete(event)
+    db.session.commit()
+    flash('Event cancelled successfully.', 'success')
+    return redirect(url_for('main.update_event'))
+
+
+
 # Upcoming events page
 @main_bp.route('/upcoming-event')
 @login_required

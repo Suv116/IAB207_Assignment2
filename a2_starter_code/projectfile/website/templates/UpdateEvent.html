@@ -116,9 +116,19 @@
                                             class="btn btn-success btn-block btn-lg gradient-custom-4 text-body">
                                         Save Changes
                                     </button>
-                                </div>
                             </form>
 
+                            <!-- Cancel Event -->
+                            {% if selected_event %}
+                            <form method="POST" action="{{ url_for('main.delete_event', event_id=selected_event.id) }}">
+                                <button type="submit"
+                                        class="btn btn-danger btn-block btn-lg text-body"
+                                        onclick="return confirm('Are you sure you want to cancel this event?');">
+                                    Cancel This Event
+                                </button>
+                            </form>
+                            {% endif %}
+                            
                         </div>
                     </div>
                 </div>
