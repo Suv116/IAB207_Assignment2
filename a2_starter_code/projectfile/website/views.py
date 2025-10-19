@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_required, logout_user, current_user
 from flask_bcrypt import generate_password_hash
 from .forms import RegisterForm
-from .models import User, Comment
+from .models import User, Comment, Ticket, Event, EventStatus, Genre
 from . import db
 from .models import Event
 
@@ -23,9 +23,37 @@ def index():
 # Events page
 @main_bp.route('/events')
 def events():
-    events = Event.query.order_by(Event.event_date.asc()).all()
-    print("Found events:", events) 
-    return render_template('events.html', events=events)
+    query = Event.query
+
+    # Filters
+    max_price = request.args.get('max_price', type=float)
+    genres = request.args.getlist('genre')
+    status = request.args.get('status')
+    location = request.args.get('location', '').strip()
+
+    # Apply filters
+    if max_price is not None:
+        query = query.outerjoin(Ticket).filter((Ticket.price <= max_price) | (Ticket.id.is_(None)))
+
+    if genres:
+        try:
+            enum_genres = [Genre[g.upper()] for g in genres if g.upper() in Genre.__members__]
+            query = query.filter(Event.genre.in_(enum_genres))
+        except KeyError:
+            pass
+
+    if status:
+        status_key = status.replace(" ", "").upper()
+        if status_key in EventStatus.__members__:
+            query = query.filter(Event.status == EventStatus[status_key])
+
+    if location:
+        query = query.filter(Event.venue.ilike(f"%{location}%"))
+
+    events = query.distinct().order_by(Event.event_date.asc()).all()
+
+    return render_template("events.html", events=events)
+
 
 # Event detail page
 @main_bp.route('/details/<int:event_id>')
