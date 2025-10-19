@@ -11,17 +11,16 @@
                     style="font-family:'Bebas Neue', sans-serif; letter-spacing:1px;">
                     Filter Events
                 </h5>
-
-                <form>
+                <form method="GET">
                     <div class="row">
                         <!-- Price Range -->
                         <div class="col-md-4 mb-3">
                             <label for="priceRange" class="form-label">Price Range ($)</label>
                             <input type="range" class="form-range" min="0" max="500" step="10" id="priceRange"
-                                   value="250">
+                                name="max_price" value="{{ request.args.get('max_price', 250) }}">
                             <div class="d-flex justify-content-between">
                                 <span>$0</span>
-                                <span id="priceValue" style="font-weight:bold;">$250</span>
+                                <span id="priceValue" style="font-weight:bold;">${{ request.args.get('max_price', 250) }}</span>
                                 <span>$500+</span>
                             </div>
                         </div>
@@ -31,94 +30,58 @@
                             <label class="form-label">Genre</label>
                             <div class="row">
                                 <div class="col-6">
+                                    {% for g in ['grunge','metal','tribute','classic','70s'] %}
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="grunge" id="grungeCheck">
-                                        <label class="form-check-label" for="grungeCheck">Grunge</label>
+                                        <input class="form-check-input" type="checkbox" value="{{ g }}" id="{{ g }}Check" name="genre"
+                                        {% if g in request.args.getlist('genre') %}checked{% endif %}>
+                                        <label class="form-check-label" for="{{ g }}Check">{{ g|capitalize }}</label>
                                     </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="metal" id="metalCheck">
-                                        <label class="form-check-label" for="metalCheck">Metal</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="tribute"
-                                               id="tributeCheck">
-                                        <label class="form-check-label" for="tributeCheck">Tribute</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="classic"
-                                               id="classicCheck">
-                                        <label class="form-check-label" for="classicCheck">Classic</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="70s" id="70sCheck">
-                                        <label class="form-check-label" for="70sCheck">70s</label>
-                                    </div>
+                                    {% endfor %}
                                 </div>
                                 <div class="col-6">
+                                    {% for g in ['80s','90s','00s','southern','psychedelic'] %}
                                     <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="80s" id="80sCheck">
-                                        <label class="form-check-label" for="80sCheck">80s</label>
+                                        <input class="form-check-input" type="checkbox" value="{{ g }}" id="{{ g }}Check" name="genre"
+                                        {% if g in request.args.getlist('genre') %}checked{% endif %}>
+                                        <label class="form-check-label" for="{{ g }}Check">{{ g|capitalize }}</label>
                                     </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="90s" id="90sCheck">
-                                        <label class="form-check-label" for="90sCheck">90s</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="00s" id="00sCheck">
-                                        <label class="form-check-label" for="00sCheck">00s</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="southern"
-                                               id="southernCheck">
-                                        <label class="form-check-label" for="southernCheck">Southern</label>
-                                    </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="checkbox" value="psychedlic"
-                                               id="psychedlicCheck">
-                                        <label class="form-check-label" for="psychedlicCheck">Psychedlic</label>
-                                    </div>
+                                    {% endfor %}
                                 </div>
                             </div>
                         </div>
-
 
                         <!-- Status -->
                         <div class="col-md-4 mb-3">
                             <label class="form-label">Availability</label>
                             <div class="row">
                                 <div class="col-6">
+                                    {% for status in ['open','sold out'] %}
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="statusRadio" id="openRadio"
-                                               checked>
-                                        <label class="form-check-label" for="openRadio">Open</label>
+                                        <input class="form-check-input" type="radio" name="status" id="{{ status|replace(' ','') }}Radio" value="{{ status }}"
+                                        {% if request.args.get('status','open') == status %}checked{% endif %}>
+                                        <label class="form-check-label" for="{{ status|replace(' ','') }}Radio">{{ status|capitalize }}</label>
                                     </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="statusRadio"
-                                               id="soldoutRadio">
-                                        <label class="form-check-label" for="soldoutRadio">Sold Out</label>
-                                    </div>
+                                    {% endfor %}
                                 </div>
                                 <div class="col-6">
+                                    {% for status in ['cancelled','inactive'] %}
                                     <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="statusRadio"
-                                               id="cancelledRadio">
-                                        <label class="form-check-label" for="cancelledRadio">Cancelled</label>
+                                        <input class="form-check-input" type="radio" name="status" id="{{ status|replace(' ','') }}Radio" value="{{ status }}"
+                                        {% if request.args.get('status','open') == status %}checked{% endif %}>
+                                        <label class="form-check-label" for="{{ status|replace(' ','') }}Radio">{{ status|capitalize }}</label>
                                     </div>
-                                    <div class="form-check">
-                                        <input class="form-check-input" type="radio" name="statusRadio"
-                                               id="inactiveRadio">
-                                        <label class="form-check-label" for="inactiveRadio">Inactive</label>
-                                    </div>
+                                    {% endfor %}
                                 </div>
                             </div>
                         </div>
 
-
                         <!-- Location !-->
                         <div class="col-md-4 mb-3">
                             <label class="form-label" for="locationInput">Location</label>
-                            <input type="text" class="form-control" id="locationInput" placeholder="Enter city or venue"
-                                   style="font-family: 'Bebas Neue', sans-serif;">
+                            <input type="text" class="form-control" id="locationInput" name="location"
+                                placeholder="Enter city or venue"
+                                value="{{ request.args.get('location','') }}"
+                                style="font-family: 'Bebas Neue', sans-serif;">
                         </div>
                     </div>
                     <button type="submit" class="btn btn-dark btn-sm mt-2">Apply Filters</button>
@@ -130,153 +93,33 @@
     <hr class="section-divider">
 
     <div class="container mt-3">
-        <h3>Events In Brisbane</h3>
-        <p>View several upcoming concerts near you</p>
+        <div class="container mt-3">
+    <h3>Events In Brisbane</h3>
+    <p>View several upcoming concerts near you</p>
 
-
-        <div class="row">
-            <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-3">
+    <div class="row">
+        {% if events %}
+            {% for event in events %}
+            <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 mb-3">
                 <div class="card h-100 event-card">
-                    <img class="card-img-top event-img" src="/static/The%20Doors.jpg" alt="Card image">
-                    <div class="card-body p-2">
-                        <h6 class="card-title mb-1">The Doors GoGo Whiskey Tribute</h6>
-                        <p class="card-text small mb-2">Sep 28, 2025 · Princess Theatre · Status: Open</p>
-                        <a href="Details.html" class="btn btn-primary btn-sm w-100">See Details</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-3">
-                <div class="card h-100 event-card">
-                    <img class="card-img-top event-img" src="/static/TheAnimals.jpg" alt="Card image">
-                    <div class="card-body p-2">
-                        <h6 class="card-title mb-1">The Animals: Last Curtains</h6>
-                        <p class="card-text small mb-2">Oct 10, 2025 · Princess Theatre · Status: Open</p>
-                        <a href="Details.html" class="btn btn-primary btn-sm w-100">See Details</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-3">
-                <div class="card h-100 event-card">
-                    <img class="card-img-top event-img" src="/static/Metallica1.jpg" alt="Card image">
+                    <img class="card-img-top event-img"
+                         src="{{ url_for('static', filename='uploads/' ~ event.photo) if event.photo else url_for('static', filename='default.jpg') }}"
+                         alt="Event image">
                     <div class="card-body p-2 d-flex flex-column">
-                        <h6 class="card-title mb-1">Metallica</h6>
+                        <h6 class="card-title mb-1">{{ event.title }}</h6>
                         <div class="mt-auto">
-                            <p class="card-text small mb-2"> Oct 25, 2025 · Suncorp Stadium · Status: Sold Out </p>
-                            <a href="Details.html" class="btn btn-primary btn-sm w-100">See Details</a>
+                            <p class="card-text small mb-2">
+                                {{ event.event_date.strftime('%b %d, %Y') }} · {{ event.venue }} · Status: {{ event.status.value }}
+                            </p>
+                            <a href="{{ url_for('main.details', event_id=event.id) }}" class="btn btn-primary btn-sm w-100">See Details</a>
                         </div>
                     </div>
                 </div>
             </div>
-
-
-            <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-3">
-                <div class="card h-100 event-card">
-                    <img class="card-img-top event-img" src="/static/PearlJam3.jpg" alt="Card image">
-                    <div class="card-body p-2">
-                        <h6 class="card-title mb-1">Riot Act: Pearl Jam Tribute</h6>
-                        <p class="card-text small mb-2">Nov 7, 2025 · Fortitude Music Hall · Status: Open</p>
-                        <a href="Details.html" class="btn btn-primary btn-sm w-100">See Details</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-3">
-                <div class="card h-100 event-card">
-                    <img class="card-img-top event-img" src="/static/LetzZep.jpg" alt="Card image">
-                    <div class="card-body p-2">
-                        <h6 class="card-title mb-1">Letz Zep: Led Zeppelin Tribute</h6>
-                        <p class="card-text small mb-2">Nov 15, 2025 · Brisbane Powerhouse · Status: Open</p>
-                        <a href="Details.html" class="btn btn-primary btn-sm w-100">See Details</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-3">
-                <div class="card h-100 event-card">
-                    <img class="card-img-top event-img" src="/static/ACDC.jpeg" alt="Card image">
-                    <div class="card-body p-2">
-                        <h6 class="card-title mb-1">AC/DC: Thunderstruck Night</h6>
-                        <p class="card-text small mb-2">Dec 5, 2025 · Suncorp Stadium · Status: Open</p>
-                        <a href="Details.html" class="btn btn-primary btn-sm w-100">See Details</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
-        <div class="row">
-            <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-3">
-                <div class="card h-100 event-card">
-                    <img class="card-img-top event-img" src="/static/Credence%20Clearwater%20Revival.jpg"
-                         alt="Card image">
-                    <div class="card-body p-2">
-                        <h6 class="card-title mb-1">CCR Tribute</h6>
-                        <p class="card-text small mb-2">Sep 4, 2025 · Brisbane Powerhouse · Status: Open</p>
-                        <a href="Details.html" class="btn btn-primary btn-sm w-100">See Details</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-3">
-                <div class="card h-100 event-card">
-                    <img class="card-img-top event-img" src="/static/FleetwoodMac2.jpg" alt="Card image">
-                    <div class="card-body p-2">
-                        <h6 class="card-title mb-1">Fleetwood Mac Tribute</h6>
-                        <p class="card-text small mb-2">Sep 8, 2025 · Princess Theatre · Status: Open</p>
-                        <a href="Details.html" class="btn btn-primary btn-sm w-100">See Details</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-3">
-                <div class="card h-100 event-card">
-                    <img class="card-img-top event-img" src="/static/Black%20Sabbath.jpg" alt="Card image">
-                    <div class="card-body p-2">
-                        <h6 class="card-title mb-1">Black Sabbath Tribute</h6>
-                        <p class="card-text small mb-2">Sep 28, 2025 · Princess Theatre · Status: Open</p>
-                        <a href="Details.html" class="btn btn-primary btn-sm w-100">See Details</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-3">
-                <div class="card h-100 event-card">
-                    <img class="card-img-top event-img" src="/static/Beatles.jpg" alt="Card image">
-                    <div class="card-body p-2">
-                        <h6 class="card-title mb-1">Beatles Tribute</h6>
-                        <p class="card-text small mb-2">Oct 1, 2025 · The Sound Garden · Status: Open</p>
-                        <a href="Details.html" class="btn btn-primary btn-sm w-100">See Details</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-3">
-                <div class="card h-100 event-card">
-                    <img class="card-img-top event-img" src="/static/Stone%20Temple%20Pilots.jpg" alt="Card image">
-                    <div class="card-body p-2">
-                        <h6 class="card-title mb-1">Stone Temple Pilots</h6>
-                        <p class="card-text small mb-2">Oct 21, 2025 · Fortitude Music Hall · Status: Open</p>
-                        <a href="Details.html" class="btn btn-primary btn-sm w-100">See Details</a>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-6 col-sm-4 col-md-3 col-lg-2 mb-3">
-                <div class="card h-100 event-card">
-                    <img class="card-img-top event-img" src="/static/Kurt.jpg" alt="Card image">
-                    <div class="card-body p-2">
-                        <h6 class="card-title mb-1">Nirvana Tribute</h6>
-                        <p class="card-text small mb-2">Oct 18, 2025 · Fortitude Music Hall · Status: Open</p>
-                        <a href="Details.html" class="btn btn-primary btn-sm w-100">See Details</a>
-                    </div>
-                </div>
-            </div>
-        </div>
+            {% endfor %}
+        {% else %}
+            <p>No events found matching your filters.</p>
+        {% endif %}
     </div>
-    <hr class="section-divider">
 </div>
-
-{% endblock %}
-
+{% endblock %}python3 a2_starter_code/projectfile/main.py

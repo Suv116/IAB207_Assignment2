@@ -20,7 +20,7 @@ class RegisterForm(FlaskForm):
             InputRequired("Please enter your phone number"),
             Length(min=8, max=15, message="Phone number must be between 8 and 15 digits"),
             Regexp(
-                regex=r'^\+?[\d\s\-\(\)]+$',
+                regex=r'^\d+$',
                 message="Phone number can only contain digits, spaces, '+', '-', or parentheses"
             )
         ]

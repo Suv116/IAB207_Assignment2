@@ -33,7 +33,10 @@
                                 </div>
 
                                 <div class="form-outline mb-4">
-                                    {{ form.phone_number(class="form-control form-control-lg", placeholder="Phone Number") }}
+                                   {{ form.phone_number(class="form-control form-control-lg", placeholder="Phone Number") }}
+                                    {% for error in form.phone_number.errors %}
+                                        <div class="text-danger small">{{ error }}</div>
+                                    {% endfor %}
                                 </div>
 
                                 <div class="form-outline mb-4">
