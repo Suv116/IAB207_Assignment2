@@ -19,39 +19,46 @@
             <!-- Event Title -->
             <h1>{{ event.title }}</h1>
 
-            <!-- The slideshow/carousel -->
-<div id="demo" class="carousel slide" data-bs-ride="carousel">
+        <!-- Carousel -->
+        <div id="demo" class="carousel slide" data-bs-ride="carousel">
 
-    <!-- Indicators -->
-    <div class="carousel-indicators">
-        {% for img in event.images %}
-        <button type="button" data-bs-target="#demo" data-bs-slide-to="{{ loop.index0 }}"
-                class="{% if loop.first %}active{% endif %}"
-                aria-current="{% if loop.first %}true{% endif %}"
-                aria-label="Slide {{ loop.index }}">
-        </button>
-        {% endfor %}
-    </div>
+            <!-- Indicators -->
+            <div class="carousel-indicators">
+                {% if event.photo %}
+                <button type="button" data-bs-target="#demo" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 0"></button>
+                {% endif %}
+                {% for img in event.images %}
+                <button type="button" data-bs-target="#demo" data-bs-slide-to="{{ loop.index0 + (1 if event.photo else 0) }}"
+                        class="{% if not event.photo and loop.first %}active{% endif %}"
+                        aria-current="{% if not event.photo and loop.first %}true{% endif %}"
+                        aria-label="Slide {{ loop.index }}">
+                </button>
+                {% endfor %}
+            </div>
 
-    <!-- Slides -->
-    <div class="carousel-inner">
-        {% for img in event.images %}
-        <div class="carousel-item {% if loop.first %}active{% endif %}">
-            <img src="{{ url_for('static', filename=img.filename) }}"
-                 class="d-block w-100 carousel-img">
+            <!-- Slides -->
+            <div class="carousel-inner">
+                {% if event.photo %}
+                <div class="carousel-item active">
+                    <img src="{{ url_for('static', filename=event.photo) }}" class="d-block w-100 carousel-img">
+                </div>
+                {% endif %}
+
+                {% for img in event.images %}
+                <div class="carousel-item {% if not event.photo and loop.first %}active{% endif %}">
+                    <img src="{{ url_for('static', filename=img.filename) }}" class="d-block w-100 carousel-img">
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- Controls -->
+            <button class="carousel-control-prev" type="button" data-bs-target="#demo" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#demo" data-bs-slide="next">
+                <span class="carousel-control-next-icon"></span>
+            </button>
         </div>
-        {% endfor %}
-    </div>
-
-    <!-- Controls -->
-    <button class="carousel-control-prev" type="button" data-bs-target="#demo" data-bs-slide="prev">
-        <span class="carousel-control-prev-icon"></span>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#demo" data-bs-slide="next">
-        <span class="carousel-control-next-icon"></span>
-    </button>
-</div>
-
             <br>
 
             <!-- Event Info -->

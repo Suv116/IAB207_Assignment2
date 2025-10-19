@@ -4,7 +4,8 @@ from flask_bcrypt import generate_password_hash
 from .forms import RegisterForm
 from .models import User, Comment
 from . import db
-from .models import Event
+from .models import Event, Order, EventStatus
+from datetime import datetime, date
 
 main_bp = Blueprint('main', __name__)
 
@@ -44,7 +45,20 @@ def update_event():
 @main_bp.route('/upcoming-event')
 @login_required
 def upcoming_event():
-    return render_template('UpcomingEvent.html')
+    today = date.today()
+    events = (
+        Event.query
+        .join(Order)
+        .filter(
+            Order.user_id == current_user.id,
+            Event.event_date >= today,
+            Event.status == EventStatus.OPEN
+        )
+        .order_by(Event.event_date.asc())
+        .all()
+    )
+
+    return render_template('UpcomingEvent.html', events=events)
 
 # Event history page
 @main_bp.route('/history')

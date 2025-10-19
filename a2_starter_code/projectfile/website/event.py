@@ -9,6 +9,17 @@ from . import db
 
 event_bp = Blueprint("event", __name__)
 
+UPLOAD_FOLDER = "uploads"  
+
+# Helper to save uploaded file and return relative path
+def save_file(file):
+    if not file or file.filename == "":
+        return None
+    filename = secure_filename(file.filename)
+    path = os.path.join(current_app.root_path, "static", UPLOAD_FOLDER, filename)
+    file.save(path)
+    return f"{UPLOAD_FOLDER}/{filename}"
+
 @event_bp.route("/create-event", methods=["GET", "POST"])
 @login_required
 def create_event():
@@ -44,21 +55,26 @@ def create_event():
                 description=description,
                 user_id=current_user.id,
             )
-
+            # Save main photo
             photo_file = request.files.get("photo")
-            if photo_file:
+            if photo_file and photo_file.filename != "":
                 filename = secure_filename(photo_file.filename)
-                photo_file.save(os.path.join(current_app.config["UPLOAD_FOLDER"], filename))
-                event.photo = filename
-            db.session.add(event)
-            db.session.flush()
+                save_path = os.path.join(current_app.config["UPLOAD_FOLDER"], filename)
+                photo_file.save(save_path)
+                # Save relative path for template
+                event.photo = f"uploads/{filename}"
 
+            db.session.add(event)
+            db.session.flush()  # Get event.id before adding carousel images
+
+            # Save carousel images
             carousel_files = request.files.getlist("carousel_images")
             for f in carousel_files:
-                if f:
+                if f and f.filename != "":
                     filename = secure_filename(f.filename)
-                    f.save(os.path.join(current_app.config["UPLOAD_FOLDER"], filename))
-                    img = EventImage(event_id=event.id, filename=filename)
+                    save_path = os.path.join(current_app.config["UPLOAD_FOLDER"], filename)
+                    f.save(save_path)
+                    img = EventImage(event_id=event.id, filename=f"uploads/{filename}")
                     db.session.add(img)
 
             if ticket_type and price:

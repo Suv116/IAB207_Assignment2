@@ -23,7 +23,7 @@
                     {% set user_orders = event.orders | selectattr("user_id", "equalto", current_user.id) | list %}
                     {% if user_orders %}
                     <li class="mb-4 p-3" style="border: 1px solid #ddd; border-radius: 8px;">
-                        <a href="{{ url_for('event.upcoming_events', event_id=event.id) }}" class="concert-title" style="font-size: 1.2rem; font-weight: bold;">
+                        <a href="{{ url_for('main.details', event_id=event.id) }}" class="concert-title" style="font-size: 1.2rem; font-weight: bold;">
                             {{ event.title }}
                         </a>
                         <div class="Text-section mt-2">
@@ -41,7 +41,7 @@
                             <p class="status">Status: {{ event.status.value|capitalize }}</p>
 
                             <div class="booking-buttons mt-3">
-                                <a href="{{ url_for('event.upcoming_events', event_id=event.id) }}" class="btn btn-sm btn-outline-dark">View Ticket</a>
+                                <a href="{{ url_for('main.details', event_id=event.id) }}" class="btn btn-sm btn-outline-dark">View Ticket</a>
                             </div>
                         </div>
                     </li>
