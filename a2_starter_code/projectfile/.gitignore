@@ -1,3 +1,7 @@
+__pycache__/
+*.pyc
+instance/sitedata.sqlite
+venv/
 
 # Ignore Python cache files
 __pycache__/
