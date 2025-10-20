@@ -24,6 +24,11 @@ def create_app():
     db.init_app(app)
     Bootstrap(app)
 
+    with app.app_context():
+        print("Creating tables if they do not exist...")
+        db.create_all()
+        print("Tables are ready!")
+
     login_manager = LoginManager()
     login_manager.login_view = 'auth.login'
     login_manager.init_app(app)
