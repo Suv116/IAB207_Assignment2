@@ -7,7 +7,7 @@ from . import db
 
 # User Model
 class User(db.Model, UserMixin):
-    __tablename__ = "users"
+    __tablename__ = 'users'
 
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(150), unique=True, nullable=False)
@@ -56,7 +56,7 @@ class Genre(enum.Enum):
 
 
 class Event(db.Model):
-    __tablename__ = "events"
+    __tablename__ = 'events'
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
@@ -90,7 +90,7 @@ class Event(db.Model):
     )
 
 class EventImage(db.Model):
-    __tablename__ = "event_images"
+    __tablename__ = 'event_images'
 
     id = db.Column(db.Integer, primary_key=True)
     event_id = db.Column(db.Integer, db.ForeignKey("events.id"), nullable=False)
@@ -101,7 +101,7 @@ class EventImage(db.Model):
 
 # Ticket Model
 class Ticket(db.Model):
-    __tablename__ = "tickets"
+    __tablename__ = 'tickets'
 
     id = db.Column(db.Integer, primary_key=True)
     ticket_type = db.Column(db.String(100), nullable=False)
@@ -120,7 +120,7 @@ class Ticket(db.Model):
 
 # Comment Model
 class Comment(db.Model):
-    __tablename__ = "comments"
+    __tablename__ = 'comments'
 
     id = db.Column(db.Integer, primary_key=True)
     content = db.Column(db.Text, nullable=False)
@@ -137,7 +137,7 @@ class Comment(db.Model):
 
 # Order Model
 class Order(db.Model):
-    __tablename__ = "orders"
+    __tablename__ = 'orders'
 
     id = db.Column(db.Integer, primary_key=True)
     price = db.Column(db.Float, nullable=False)

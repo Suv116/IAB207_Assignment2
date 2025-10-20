@@ -58,6 +58,21 @@ def signup():
             flash("Username already exists", "danger")
             return redirect(url_for("auth.signup"))
         
+        existing_email = db.session.scalar(
+            db.select(User).where(User.email == email)
+        )
+
+        if existing_email:
+            flash("Email already in use. Please choose another one.", "danger")
+            return redirect(url_for("auth.signup"))
+        
+        existing_phone = db.session.scalar(
+            db.select(User).where(User.phone_number == phone_number)
+        )
+        if existing_phone:
+            flash("Phone number already in use. Please use another number.", "danger")
+            return redirect(url_for("auth.signup"))
+        
     
 
         # Hash password
