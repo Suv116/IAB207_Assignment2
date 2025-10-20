@@ -12,8 +12,9 @@ def create_app():
     app.debug = True
     app.secret_key = "somesecretkey"
 
-    # App configuration
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sitedata.sqlite'
+    # Absolute path to the database in the instance folder
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(app.instance_path, 'sitedata.sqlite')
+
     app.config['TEMPLATES_AUTO_RELOAD'] = True
     app.config["UPLOAD_FOLDER"] = os.path.join(app.root_path, 'static/uploads')
 
