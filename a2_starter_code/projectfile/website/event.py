@@ -1,6 +1,7 @@
 import os
 from flask import Blueprint, flash, render_template, request, url_for, redirect, current_app
 from flask_login import login_required, current_user
+from sqlalchemy import cast, Date
 from datetime import datetime
 from werkzeug.utils import secure_filename
 from .models import Event, Ticket, Order, User, OrganisationType, Genre, EventImage, Comment
@@ -54,6 +55,7 @@ def create_event():
                 venue=venue,
                 description=description,
                 user_id=current_user.id,
+                photo=photo_path
             )
             # Save main photo
             photo_file = request.files.get("photo")
@@ -99,7 +101,6 @@ def create_event():
 @login_required
 def add_comment(event_id):
     content = request.form.get("content")
-
     if not content or content.strip() == "":
         flash("Comment cannot be empty.", "danger")
         return redirect(url_for("main.details", event_id=event_id))
@@ -150,22 +151,56 @@ def book_tickets(event_id):
                 order_date=datetime.utcnow()
             )
             db.session.add(order)
+            print(f"[DEBUG] Added order: user={current_user.id}, event={event.id}, ticket={ticket.id}, qty={qty}, price={ticket.price * qty}")
+    # CONTAINS DEBUG 
 
     if total_tickets == 0:
         flash("Please select at least one ticket to book.", "warning")
         return redirect(url_for("event.event_details", event_id=event.id))
+    try: 
+        db.session.commit()
+        print(f"[DEBUG] Commit successful for event {event.id} by user {current_user.id}")
+        flash("Tickets booked successfully!", "success")
+    except Exception as e:
+        db.session.rollback()
+        print(f"[ERROR] Commit failed: {e}")
+        flash("Failed to book tickets. Please try again.", "danger")
 
-    db.session.commit()
-    flash("Tickets booked successfully!", "success")
 
     return redirect(url_for("event.event_details", event_id=event.id))
 
+@event_bp.route("/cancel_order/<int:order_id>", methods=["POST"])
+@login_required
+def cancel_order(order_id):
+    # Get the order
+    order = Order.query.get_or_404(order_id)
+
+    # Make sure the current user owns this order
+    if order.user_id != current_user.id:
+        flash("You are not authorized to cancel this order.", "danger")
+        return redirect(url_for("event.upcoming_view"))
+    event_title = order.event.title
+    ticket_type = order.ticket.ticket_type
+
+    
+    # Delete the order
+    db.session.delete(order)
+    db.session.commit()
+
+    flash(f"Your booking for {order.event.title} ({order.ticket.ticket_type}) has been cancelled.", "success")
+    return redirect(url_for("event.upcoming"))
+#CONTAINS DEBUG 
 # Upcoming Events Route
 @event_bp.route("/upcoming", endpoint="upcoming")
 @login_required
 def upcoming_view():
     """Shows only the user's future event bookings."""
     user_orders = Order.query.filter_by(user_id=current_user.id).all()
+    
+    print("All user orders:")
+    for o in user_orders:
+        print(f"Order: event_id={o.event_id}, event_date={o.event.event_date}, status={o.event.status}")
+
     event_ids = {order.event_id for order in user_orders}
 
     # Only events whose date is in the future or today
@@ -173,11 +208,36 @@ def upcoming_view():
         Event.id.in_(event_ids),
         Event.event_date >= datetime.now().date()
     ).order_by(Event.event_date.asc()).all()
+    print("Upcoming events fetched:")
+    for e in events:
+        print(f"Event: {e.title}, date={e.event_date}, status={e.status}")
 
     return render_template("UpcomingEvent.html", events=events)
 # Route for Past Bookings
-@event_bp.route("/history")
+@login_required
+@event_bp.route("/event/history")
 def history_view():
-    events = get_past_events()  # your logic to fetch past bookings
-    return render_template("history.html", events=events, active_tab="past")
+     # Get all orders for current user
+    user_orders = Order.query.filter_by(user_id=current_user.id).all()
+    
+    print("All user orders:")
+    for o in user_orders:
+        print(f"Order: event_id={o.event_id}, event_date={o.event.event_date}, status={o.event.status}")
+
+     # Get unique event IDs for events that are in the past
+    past_event_ids = {order.event_id for order in user_orders if order.event.event_date < datetime.now().date()}
+
+    print("Past event IDs:")
+    print(past_event_ids)
+
+    # Query those events
+    events = Event.query.filter(Event.id.in_(past_event_ids)).order_by(Event.event_date.desc()).all()
+    
+    print("Past events fetched:")
+    for e in events:
+        print(f"Event: {e.title}, date={e.event_date}, status={e.status}")
+    
+    return render_template(
+        "history.html", events=events, active_tab="past")
+
 

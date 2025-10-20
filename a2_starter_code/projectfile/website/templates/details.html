@@ -40,13 +40,13 @@
             <div class="carousel-inner">
                 {% if event.photo %}
                 <div class="carousel-item active">
-                    <img src="{{ url_for('static', filename=event.photo) }}" class="d-block w-100 carousel-img">
+                    <img src="{{ url_for('static', filename='uploads/' ~event.photo) }}" class="d-block w-100 carousel-img">
                 </div>
                 {% endif %}
 
                 {% for img in event.images %}
                 <div class="carousel-item {% if not event.photo and loop.first %}active{% endif %}">
-                    <img src="{{ url_for('static', filename=img.filename) }}" class="d-block w-100 carousel-img">
+                    <img src="{{ url_for('static', filename='uploads/' ~img.filename) }}" class="d-block w-100 carousel-img">
                 </div>
                 {% endfor %}
             </div>

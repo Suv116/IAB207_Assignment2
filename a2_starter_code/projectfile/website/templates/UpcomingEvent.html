@@ -1,6 +1,16 @@
 {% extends "layout.html" %}
 
 {% block content %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }} alert-dismissible fade show mt-3" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
 <div class="container mt-5">
     <div class="container mt-5 text-center">
         <h2 class="mb-4">My Upcoming Bookings</h2>
@@ -23,6 +33,15 @@
                     {% set user_orders = event.orders | selectattr("user_id", "equalto", current_user.id) | list %}
                     {% if user_orders %}
                     <li class="mb-4 p-3" style="border: 1px solid #ddd; border-radius: 8px;">
+                        <div class="me-3" style="flex: 0 0 150px;">
+                            {% if event.photo %}
+                                <img src="{{ url_for('static', filename='uploads/' ~event.photo) }}" alt="{{ event.title }}" 
+                                    style="width:150px; height:100px; object-fit:cover; border-radius:8px;">
+                            {% else %}
+                                <img src="{{ url_for('static', filename='default_event.jpg') }}" alt="Default event image"
+                                    style="width:150px; height:100px; object-fit:cover; border-radius:8px;">
+                            {% endif %}
+                        </div>
                         <a href="{{ url_for('main.details', event_id=event.id) }}" class="concert-title" style="font-size: 1.2rem; font-weight: bold;">
                             {{ event.title }}
                         </a>
@@ -37,12 +56,25 @@
                                 <li>{{ order.ticket.ticket_type }} × {{ order.quantity }} — ${{ "%.2f"|format(order.price) }}</li>
                                 {% endfor %}
                             </ul>
-
+                            
                             <p class="status">Status: {{ event.status.value|capitalize }}</p>
-
+                            <ul>
+                                {% for order in user_orders %}
+                                <li>
+                                    {{ order.ticket.ticket_type }} × {{ order.quantity }} — ${{ "%.2f"|format(order.price) }}
+                                    <form method="POST" action="{{ url_for('event.cancel_order', order_id=order.id) }}" 
+                                        onsubmit="return confirm('Are you sure you want to cancel this booking?');">
+                                        <button type="submit" class="btn btn-danger btn-sm">Cancel Booking</button>
+                                    </form>
+                                    <form method="POST" action="{{ url_for('event.cancel_order', order_id=order.id) }}" style="display:inline;">
+                                    </form>
+                                </li>
+                                {% endfor %}
+                            </ul>
                             <div class="booking-buttons mt-3">
                                 <a href="{{ url_for('main.details', event_id=event.id) }}" class="btn btn-sm btn-outline-dark">View Ticket</a>
                             </div>
+                            
                         </div>
                     </li>
                     {% endif %}
