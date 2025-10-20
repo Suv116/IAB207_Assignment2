@@ -8,14 +8,12 @@ from flask_bootstrap5 import Bootstrap
 db = SQLAlchemy()
 
 def create_app():
-    app = Flask(__name__, template_folder="templates")
+    app = Flask(__name__, instance_relative_config=True, template_folder="templates")
     app.debug = True
     app.secret_key = "somesecretkey"
 
     # App configuration
-    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-    DB_PATH = os.path.join(BASE_DIR, "instance", 'sitedata.sqlite')
-    app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///sitedata.sqlite"
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sitedata.sqlite'
     app.config['TEMPLATES_AUTO_RELOAD'] = True
     app.config["UPLOAD_FOLDER"] = os.path.join(app.root_path, 'static/uploads')
 
@@ -43,5 +41,7 @@ def create_app():
 
     from . import event
     app.register_blueprint(event.event_bp)
+
+    from . import models
 
     return app
