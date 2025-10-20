@@ -13,9 +13,12 @@ def create_app():
     app.secret_key = "somesecretkey"
 
     # App configuration
-    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sitedata.sqlite'
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    DB_PATH = os.path.join(BASE_DIR, "instance", 'sitedata.sqlite')
+    app.config['SQLALCHEMY_DATABASE_URI'] = f"sqlite:///sitedata.sqlite"
     app.config['TEMPLATES_AUTO_RELOAD'] = True
     app.config["UPLOAD_FOLDER"] = os.path.join(app.root_path, 'static/uploads')
+
 
     # Initialize extensions
     db.init_app(app)
