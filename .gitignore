@@ -1,0 +1,3 @@
+**/__pycache__/
+*.pyc
+a2_starter_code/projectfile/instance/sitedata.sqlite

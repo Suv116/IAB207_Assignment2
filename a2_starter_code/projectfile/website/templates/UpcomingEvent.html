@@ -1,12 +1,22 @@
 {% extends "layout.html" %}
 
 {% block content %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }} alert-dismissible fade show mt-3" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
 <div class="container mt-5">
     <div class="container mt-5 text-center">
         <h2 class="mb-4">My Upcoming Bookings</h2>
 
         <div class="d-inline-flex p-3" style="border-radius:8px;">
-            <a href="History.html" class="btn btn-outline-dark btn-sm me-2" style="color: white">Past Bookings</a>
+            <a href="{{ url_for('event.history_view') }}" class="btn btn-outline-dark btn-sm me-2" style="color: white">Past Bookings</a>
             <button class="btn btn-dark btn-sm">Upcoming Bookings</button>
         </div>
     </div>
@@ -18,43 +28,63 @@
             <div class="col-md-6 offset-md-3">
                 <ul class="concertbookingline">
 
-
-                    <li>
-                        <a href="#" class="concert-title">Metallica</a>
-                        <div class="Text-section">
-                            <p class="date">Wed · Oct 25, 2025</p>
-                            <p class="location">Suncorp Stadium</p>
+                    <!-- Display total tickets booked by the current user-->
+                    {% for event in events %}
+                    {% set user_orders = event.orders | selectattr("user_id", "equalto", current_user.id) | list %}
+                    {% if user_orders %}
+                    <li class="mb-4 p-3" style="border: 1px solid #ddd; border-radius: 8px;">
+                        <div class="me-3" style="flex: 0 0 150px;">
+                            {% if event.photo %}
+                                <img src="{{ url_for('static', filename='uploads/' ~event.photo) }}" alt="{{ event.title }}" 
+                                    style="width:150px; height:100px; object-fit:cover; border-radius:8px;">
+                            {% else %}
+                                <img src="{{ url_for('static', filename='default_event.jpg') }}" alt="Default event image"
+                                    style="width:150px; height:100px; object-fit:cover; border-radius:8px;">
+                            {% endif %}
+                        </div>
+                        <a href="{{ url_for('main.details', event_id=event.id) }}" class="concert-title" style="font-size: 1.2rem; font-weight: bold;">
+                            {{ event.title }}
+                        </a>
+                        <div class="Text-section mt-2">
+                            <p class="date">{{ event.event_date.strftime('%A · %b %d, %Y') }}</p>
+                            <p class="location">{{ event.venue }}</p>
                             <hr class="section-divider">
-                            <p class="order">ORDER #32-14533</p>
-                            <p class="status">Status: Sold Out</p>
 
-                            <div class="booking-buttons">
-                                <a href="" class="btn btn-sm btn-outline-dark">View Ticket</a>
+                            <p><strong>Your Bookings:</strong></p>
+                            <ul>
+                                {% for order in user_orders %}
+                                <li>{{ order.ticket.ticket_type }} × {{ order.quantity }} — ${{ "%.2f"|format(order.price) }}</li>
+                                {% endfor %}
+                            </ul>
+                            
+                            <p class="status">Status: {{ event.status.value|capitalize }}</p>
+                            <ul>
+                                {% for order in user_orders %}
+                                <li>
+                                    {{ order.ticket.ticket_type }} × {{ order.quantity }} — ${{ "%.2f"|format(order.price) }}
+                                    <form method="POST" action="{{ url_for('event.cancel_order', order_id=order.id) }}" 
+                                        onsubmit="return confirm('Are you sure you want to cancel this booking?');">
+                                        <button type="submit" class="btn btn-danger btn-sm">Cancel Booking</button>
+                                    </form>
+                                    <form method="POST" action="{{ url_for('event.cancel_order', order_id=order.id) }}" style="display:inline;">
+                                    </form>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                            <div class="booking-buttons mt-3">
+                                <a href="{{ url_for('main.details', event_id=event.id) }}" class="btn btn-sm btn-outline-dark">View Ticket</a>
                             </div>
+                            
                         </div>
                     </li>
-
-                    <li>
-                        <a href="#" class="concert-title">The Doors GoGo Whiskey Tribute</a>
-                        <div class="Text-section">
-                            <p class="date">Sep 28, 2025</p>
-                            <p class="location">Princess Theatre</p>
-                            <hr class="section-divider">
-                            <p class="order">ORDER #32-14534</p>
-                            <p class="status">Status: Open</p>
-
-                            <div class="booking-buttons">
-                                <a href="" class="btn btn-sm btn-outline-dark">View Ticket</a>
-                            </div>
-                        </div>
-                    </li>
+                    {% endif %}
+                    {% else %}
+                    <p class="text-center mt-5">You don’t have any upcoming bookings yet.</p>
+                    {% endfor %}
 
                 </ul>
             </div>
         </div>
     </div>
-
 </div>
-
 {% endblock %}
-

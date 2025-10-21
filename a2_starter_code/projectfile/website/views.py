@@ -2,12 +2,12 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request,
 from flask_login import login_required, logout_user, current_user
 from flask_bcrypt import generate_password_hash
 from .forms import RegisterForm
-from .models import User, Comment, Ticket, Event, EventStatus, Genre, EventImage
+from .models import User, Comment, Ticket, Event, EventStatus, Genre, EventImage, Order 
 from . import db
-from .models import Event
 from werkzeug.utils import secure_filename
 import os
 import datetime
+from datetime import datetime, date
 
 main_bp = Blueprint('main', __name__)
 
@@ -176,13 +176,26 @@ def delete_event(event_id):
 @main_bp.route('/upcoming-event')
 @login_required
 def upcoming_event():
-    return render_template('UpcomingEvent.html')
+    today = date.today()
+    events = (
+        Event.query
+        .join(Order)
+        .filter(
+            Order.user_id == current_user.id,
+            Event.event_date >= today,
+            Event.status == EventStatus.OPEN
+        )
+        .order_by(Event.event_date.asc())
+        .all()
+    )
+
+    return render_template('UpcomingEvent.html', events=events)
 
 # Event history page
 @main_bp.route('/history')
 @login_required
 def history():
-    return render_template('History.html')
+    return render_template('history.html')
 
 # Logout
 @main_bp.route('/logout')
