@@ -4,91 +4,92 @@
 <div class="container mt-5">
     <div class="container-fluid mt-3">
         <!-- Filter Section -->
-        <!--        <div class="card shadow-sm border-0 mb-4"-->
-        <!--             style="background:#e5dcc5; border-radius:12px; font-family:'Oswald', sans-serif;">-->
-        <!--            <div class="card-body">-->
-        <!--                <h5 class="card-title mb-3"-->
-        <!--                    style="font-family:'Bebas Neue', sans-serif; letter-spacing:1px;">-->
-        <!--                    Filter Events-->
-        <!--                </h5>-->
-        <!--                <form method="GET">-->
-        <!--                    <div class="row">-->
-        <!--                        &lt;!&ndash; Price Range &ndash;&gt;-->
-        <!--                        <div class="col-md-4 mb-3">-->
-        <!--                            <label for="priceRange" class="form-label">Price Range ($)</label>-->
-        <!--                            <input type="range" class="form-range" min="0" max="500" step="10" id="priceRange"-->
-        <!--                                name="max_price" value="{{ request.args.get('max_price', 250) }}">-->
-        <!--                            <div class="d-flex justify-content-between">-->
-        <!--                                <span>$0</span>-->
-        <!--                                <span id="priceValue" style="font-weight:bold;">${{ request.args.get('max_price', 250) }}</span>-->
-        <!--                                <span>$500+</span>-->
-        <!--                            </div>-->
-        <!--                        </div>-->
+        <div class="card shadow-sm border-0 mb-4"
+            style="background:#e5dcc5; border-radius:12px; font-family:'Oswald', sans-serif;">
+            <div class="card-body">
+                <h5 class="card-title mb-3"
+                    style="font-family:'Bebas Neue', sans-serif; letter-spacing:1px;">
+                    Filter Events
+                </h5>
+                <form method="GET">
+                    <div class="row">
+                        <!-- Price Range -->
+                        <div class="col-md-4 mb-3">
+                            <label for="priceRange" class="form-label">Price Range ($)</label>
+                            <input type="range" class="form-range" min="0" max="500" step="10" id="priceRange"
+                                name="max_price" value="{{ request.args.get('max_price', 250) }}">
+                            <div class="d-flex justify-content-between">
+                                <span>$0</span>
+                                <span id="priceValue" style="font-weight:bold;">${{ request.args.get('max_price', 250) }}</span>
+                                <span>$500+</span>
+                            </div>
+                        </div>
 
-        <!--                        &lt;!&ndash; Genres &ndash;&gt;-->
-        <!--                        <div class="col-md-4 mb-3">-->
-        <!--                            <label class="form-label">Genre</label>-->
-        <!--                            <div class="row">-->
-        <!--                                <div class="col-6">-->
-        <!--                                    {% for g in ['grunge','metal','tribute','classic','70s'] %}-->
-        <!--                                    <div class="form-check">-->
-        <!--                                        <input class="form-check-input" type="checkbox" value="{{ g }}" id="{{ g }}Check" name="genre"-->
-        <!--                                        {% if g in request.args.getlist('genre') %}checked{% endif %}>-->
-        <!--                                        <label class="form-check-label" for="{{ g }}Check">{{ g|capitalize }}</label>-->
-        <!--                                    </div>-->
-        <!--                                    {% endfor %}-->
-        <!--                                </div>-->
-        <!--                                <div class="col-6">-->
-        <!--                                    {% for g in ['80s','90s','00s','southern','psychedelic'] %}-->
-        <!--                                    <div class="form-check">-->
-        <!--                                        <input class="form-check-input" type="checkbox" value="{{ g }}" id="{{ g }}Check" name="genre"-->
-        <!--                                        {% if g in request.args.getlist('genre') %}checked{% endif %}>-->
-        <!--                                        <label class="form-check-label" for="{{ g }}Check">{{ g|capitalize }}</label>-->
-        <!--                                    </div>-->
-        <!--                                    {% endfor %}-->
-        <!--                                </div>-->
-        <!--                            </div>-->
-        <!--                        </div>-->
+                        <!-- Genres -->
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Genre</label>
+                            <div class="row">
+                                <div class="col-6">
+                                    {% for g in ['grunge','metal','tribute','classic','70s'] %}
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="{{ g }}" id="{{ g }}Check" name="genre"
+                                        {% if g in request.args.getlist('genre') %}checked{% endif %}>
+                                        <label class="form-check-label" for="{{ g }}Check">{{ g|capitalize }}</label>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="col-6">
+                                    {% for g in ['80s','90s','00s','southern','psychedelic'] %}
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="{{ g }}" id="{{ g }}Check" name="genre"
+                                        {% if g in request.args.getlist('genre') %}checked{% endif %}>
+                                        <label class="form-check-label" for="{{ g }}Check">{{ g|capitalize }}</label>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
 
-        <!--                        &lt;!&ndash; Status &ndash;&gt;-->
-        <!--                        <div class="col-md-4 mb-3">-->
-        <!--                            <label class="form-label">Availability</label>-->
-        <!--                            <div class="row">-->
-        <!--                                <div class="col-6">-->
-        <!--                                    {% for status in ['open','sold out'] %}-->
-        <!--                                    <div class="form-check">-->
-        <!--                                        <input class="form-check-input" type="radio" name="status" id="{{ status|replace(' ','') }}Radio" value="{{ status }}"-->
-        <!--                                        {% if request.args.get('status','open') == status %}checked{% endif %}>-->
-        <!--                                        <label class="form-check-label" for="{{ status|replace(' ','') }}Radio">{{ status|capitalize }}</label>-->
-        <!--                                    </div>-->
-        <!--                                    {% endfor %}-->
-        <!--                                </div>-->
-        <!--                                <div class="col-6">-->
-        <!--                                    {% for status in ['cancelled','inactive'] %}-->
-        <!--                                    <div class="form-check">-->
-        <!--                                        <input class="form-check-input" type="radio" name="status" id="{{ status|replace(' ','') }}Radio" value="{{ status }}"-->
-        <!--                                        {% if request.args.get('status','open') == status %}checked{% endif %}>-->
-        <!--                                        <label class="form-check-label" for="{{ status|replace(' ','') }}Radio">{{ status|capitalize }}</label>-->
-        <!--                                    </div>-->
-        <!--                                    {% endfor %}-->
-        <!--                                </div>-->
-        <!--                            </div>-->
-        <!--                        </div>-->
+                        <!-- Status -->
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">Availability</label>
+                            <div class="row">
+                                <div class="col-6">
+                                    {% for status in ['open','sold out'] %}
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="status" id="{{ status|replace(' ','') }}Radio" value="{{ status }}"
+                                        {% if request.args.get('status','open') == status %}checked{% endif %}>
+                                        <label class="form-check-label" for="{{ status|replace(' ','') }}Radio">{{ status|capitalize }}</label>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                                <div class="col-6">
+                                    {% for status in ['cancelled','inactive'] %}
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="status" id="{{ status|replace(' ','') }}Radio" value="{{ status }}"
+                                        {% if request.args.get('status','open') == status %}checked{% endif %}>
+                                        <label class="form-check-label" for="{{ status|replace(' ','') }}Radio">{{ status|capitalize }}</label>
+                                    </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
 
-        <!--                        &lt;!&ndash; Location !&ndash;&gt;-->
-        <!--                        <div class="col-md-4 mb-3">-->
-        <!--                            <label class="form-label" for="locationInput">Location</label>-->
-        <!--                            <input type="text" class="form-control" id="locationInput" name="location"-->
-        <!--                                placeholder="Enter city or venue"-->
-        <!--                                value="{{ request.args.get('location','') }}"-->
-        <!--                                style="font-family: 'Bebas Neue', sans-serif;">-->
-        <!--                        </div>-->
-        <!--                    </div>-->
-        <!--                    <button type="submit" class="btn btn-dark btn-sm mt-2">Apply Filters</button>-->
-        <!--                </form>-->
-        <!--            </div>-->
-        <!--        </div>-->
-        <!--    </div>-->
+                        <!-- Location -->
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label" for="locationInput">Location</label>
+                            <input type="text" class="form-control" id="locationInput" name="location"
+                                placeholder="Enter city or venue"
+                                value="{{ request.args.get('location','') }}"
+                                style="font-family: 'Bebas Neue', sans-serif;">
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-dark btn-sm mt-2">Apply Filters</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
 
         <hr class="section-divider">
 
