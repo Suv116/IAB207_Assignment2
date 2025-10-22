@@ -147,7 +147,28 @@ def book_tickets(event_id):
         flash("Failed to book tickets. Please try again.", "danger")
 
     return redirect(url_for("event.event_details", event_id=event.id))
+
+# Cancel order 
+@event_bp.route("/cancel_order/<int:order_id>", methods=["POST"])
+@login_required
+def cancel_order(order_id):
+    # Get the order
+    order = Order.query.get_or_404(order_id)
+
+    # Make sure the current user owns this order
+    if order.user_id != current_user.id:
+        flash("You are not authorized to cancel this order.", "danger")
+        return redirect(url_for("event.upcoming_view"))
+    event_title = order.event.title
+    ticket_type = order.ticket.ticket_type
+
     
+    # Delete the order
+    db.session.delete(order)
+    db.session.commit()
+
+    flash(f"Your booking for {order.event.title} ({order.ticket.ticket_type}) has been cancelled.", "success")
+    return redirect(url_for("event.upcoming"))
 # Upcoming Events Route
 @event_bp.route("/upcoming", endpoint="upcoming")
 @login_required
