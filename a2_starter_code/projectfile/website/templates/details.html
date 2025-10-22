@@ -1,6 +1,17 @@
 {% extends "layout.html" %}
 
 {% block content %}
+<!-- Flash messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }} alert-dismissible fade show mt-3" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
 <div id="details-page">
     <div class="container mt-5">
         <div class="container">
@@ -26,7 +37,7 @@
     <div class="carousel-inner">
         {% for img in event.images %}
         <div class="carousel-item {% if loop.first %}active{% endif %}">
-            <img src="{{ url_for('static', filename=img.filename) }}"
+            <img src="{{ url_for('static', filename='uploads/' ~img.filename) }}"
                  class="d-block w-100 carousel-img">
         </div>
         {% endfor %}
@@ -63,17 +74,17 @@
 
             <!-- Booking Section -->
             <div class="booking">
-                <h2>Book Your Tickets</h2>
-
-                {% for ticket in event.tickets %}
-                <div class="ticket-option">
-                    <label for="ticket{{ ticket.id }}"><strong>{{ ticket.ticket_type }} - ${{
-                        '%.2f'|format(ticket.price) }}</strong></label>
-                    <input type="number" id="ticket{{ ticket.id }}" min="0" max="10" value="0">
-                </div>
-                {% endfor %}
-
-                <button>Book Now</button>
+                <form method="POST" action="{{ url_for('event.book_tickets', event_id=event.id) }}">
+                    {% for ticket in event.tickets %}
+                    <div class="ticket-option">
+                        <label for="ticket{{ ticket.id }}">
+                            <strong>{{ ticket.ticket_type }} - ${{ '%.2f'|format(ticket.price) }}</strong>
+                        </label>
+                        <input type="number" id="ticket{{ ticket.id }}" name="ticket_{{ ticket.id }}" min="0" max="10" value="0">
+                    </div>
+                    {% endfor %}
+                    <button type="submit" class="btn btn-primary mt-3">Book Now</button>
+                </form>
             </div>
 
             <hr>
