@@ -5,7 +5,7 @@ from flask_login import login_required, current_user
 from datetime import datetime
 from werkzeug.utils import secure_filename
 
-from .models import User, OrganisationType, Genre, Event, Ticket, EventImage, Comment
+from .models import User, OrganisationType, Genre, Event, Ticket, EventImage, Comment, Order
 from . import db
 
 event_bp = Blueprint("event", __name__)
