@@ -17,8 +17,7 @@ def create_app():
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(app.instance_path, 'sitedata.sqlite')
     print("DB path:", os.path.join(app.instance_path, 'sitedata.sqlite'))
     app.config['TEMPLATES_AUTO_RELOAD'] = True
-    app.config["UPLOAD_FOLDER"] = os.path.join(app.root_path, 'static/uploads')
-
+    app.config["UPLOAD_FOLDER"] = os.path.join(app.root_path, "static", "uploads")
 
     # Initialize extensions
     db.init_app(app)
