@@ -37,7 +37,7 @@
     <div class="carousel-inner">
         {% for img in event.images %}
         <div class="carousel-item {% if loop.first %}active{% endif %}">
-            <img src="{{ url_for('static', filename=img.filename) }}"
+            <img src="{{ url_for('static', filename='uploads/' ~img.filename) }}"
                  class="d-block w-100 carousel-img">
         </div>
         {% endfor %}
@@ -74,17 +74,17 @@
 
             <!-- Booking Section -->
             <div class="booking">
-                <h2>Book Your Tickets</h2>
-
-                {% for ticket in event.tickets %}
-                <div class="ticket-option">
-                    <label for="ticket{{ ticket.id }}"><strong>{{ ticket.ticket_type }} - ${{
-                        '%.2f'|format(ticket.price) }}</strong></label>
-                    <input type="number" id="ticket{{ ticket.id }}" min="0" max="10" value="0">
-                </div>
-                {% endfor %}
-
-                <button>Book Now</button>
+                <form method="POST" action="{{ url_for('event.book_tickets', event_id=event.id) }}">
+                    {% for ticket in event.tickets %}
+                    <div class="ticket-option">
+                        <label for="ticket{{ ticket.id }}">
+                            <strong>{{ ticket.ticket_type }} - ${{ '%.2f'|format(ticket.price) }}</strong>
+                        </label>
+                        <input type="number" id="ticket{{ ticket.id }}" name="ticket_{{ ticket.id }}" min="0" max="10" value="0">
+                    </div>
+                    {% endfor %}
+                    <button type="submit" class="btn btn-primary mt-3">Book Now</button>
+                </form>
             </div>
 
             <hr>
