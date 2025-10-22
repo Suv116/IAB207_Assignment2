@@ -14,8 +14,10 @@ main_bp = Blueprint('main', __name__)
 # Home page
 @main_bp.route('/')
 def index():
-    trending_events = Event.query.order_by(Event.event_date.asc()).limit(6).all()
-    upcoming_events = Event.query.order_by(Event.event_date.asc()).offset(6).limit(6).all()
+    today = datetime.datetime.now().date()
+    trending_events = Event.query.filter(Event.event_date >= today).order_by(Event.event_date.asc()).limit(6).all()
+    upcoming_events = Event.query.filter(Event.event_date >= today).order_by(Event.event_date.asc()).offset(6).limit(6).all()
+
 
     return render_template(
         "index.html",
@@ -182,7 +184,7 @@ def upcoming_event():
 @main_bp.route('/history')
 @login_required
 def history():
-    return render_template('History.html')
+    return render_template('history.html')
 
 # Logout
 @main_bp.route('/logout')
