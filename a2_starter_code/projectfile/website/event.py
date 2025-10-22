@@ -148,5 +148,38 @@ def book_tickets(event_id):
 
     return redirect(url_for("event.event_details", event_id=event.id))
     
+# Upcoming Events Route
+@event_bp.route("/upcoming", endpoint="upcoming")
+@login_required
+def upcoming_view():
+    """Shows only the user's future event bookings."""
+    user_orders = Order.query.filter_by(user_id=current_user.id).all()
+
+    event_ids = {order.event_id for order in user_orders}
+
+    # Only events whose date is in the future or today
+    events = Event.query.filter(
+        Event.id.in_(event_ids),
+        Event.event_date >= datetime.now().date()
+    ).order_by(Event.event_date.asc()).all()
+
+    return render_template("UpcomingEvent.html", events=events)
+
+
+# Route for Past Bookings
+@login_required
+@event_bp.route("/event/history")
+def history_view():
+    # Get all orders for current user
+    user_orders = Order.query.filter_by(user_id=current_user.id).all()
+
+    # Get unique event IDs for events that are in the past
+    past_event_ids = {order.event_id for order in user_orders if order.event.event_date < datetime.now().date()}
+
+    # Query those events
+    events = Event.query.filter(Event.id.in_(past_event_ids)).order_by(Event.event_date.desc()).all()
+    
+    return render_template(
+        "history.html", events=events, active_tab="past")
 
     # test
