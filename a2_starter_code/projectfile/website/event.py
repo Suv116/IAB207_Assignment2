@@ -103,3 +103,38 @@ def add_comment(event_id):
 
     flash("Comment added successfully!", "success")
     return redirect(url_for("main.details", event_id=event.id))
+# Route for Event Details 
+@event_bp.route("/event/<int:event_id>", endpoint="event_details")
+@login_required
+def event_details(event_id):
+    event = Event.query.get_or_404(event_id)
+    tickets = event.tickets
+    user_orders = Order.query.filter_by(user_id=current_user.id, event_id=event.id).all()
+    return render_template("details.html", event=event, tickets=tickets, user_orders=user_orders)
+
+# Route for Book Tickets
+@event_bp.route("/book_tickets/<int:event_id>", methods=["POST"])
+@login_required
+def book_tickets(event_id):
+    event = Event.query.get_or_404(event_id)
+    tickets = event.tickets
+
+    total_tickets = 0
+
+    for ticket in tickets:
+        qty = int(request.form.get(f"ticket_{ticket.id}", 0))
+        if qty > 0:
+            total_tickets += qty
+            order = Order(
+                user_id=current_user.id,
+                event_id=event.id,
+                ticket_id=ticket.id,
+                quantity=qty,
+                price=ticket.price * qty,
+                order_date=datetime.utcnow()
+            )
+            db.session.add(order)
+
+    db.session.commit()
+    flash(f"Successfully booked {total_tickets} ticket(s) for {event.title}!", "success")
+    return redirect(url_for("event.upcoming_view"))
