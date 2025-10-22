@@ -138,3 +138,6 @@ def book_tickets(event_id):
     db.session.commit()
     flash(f"Successfully booked {total_tickets} ticket(s) for {event.title}!", "success")
     return redirect(url_for("event.upcoming_view"))
+    
+
+    # test
