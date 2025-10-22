@@ -137,7 +137,7 @@ def book_tickets(event_id):
 
     if total_tickets == 0:
         flash("Please select at least one ticket to book.", "warning")
-    return redirect(url_for("event.event_details", event_id=event.id))
+        return redirect(url_for("event.event_details", event_id=event.id))
 
     try: 
         db.session.commit()
