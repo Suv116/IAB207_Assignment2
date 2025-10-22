@@ -135,9 +135,18 @@ def book_tickets(event_id):
             )
             db.session.add(order)
 
-    db.session.commit()
-    flash(f"Successfully booked {total_tickets} ticket(s) for {event.title}!", "success")
-    return redirect(url_for("event.upcoming_view"))
+        if total_tickets == 0:
+        flash("Please select at least one ticket to book.", "warning")
+        return redirect(url_for("event.event_details", event_id=event.id))
+
+    try: 
+        db.session.commit()
+        flash("Tickets booked successfully!", "success")
+    except Exception as e:
+        db.session.rollback()
+        flash("Failed to book tickets. Please try again.", "danger")
+
+    return redirect(url_for("event.event_details", event_id=event.id))
     
 
     # test
