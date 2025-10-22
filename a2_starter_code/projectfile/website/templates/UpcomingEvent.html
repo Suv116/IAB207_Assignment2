@@ -31,7 +31,7 @@
 
                      <!-- Display total tickets booked by the current user-->
                     {% for event in events %}
-                    {% set user_orders = event.orders | selectattr("user_id", "equalto", current_user.id) | list %}
+                    {% set user_orders = user_orders | selectattr("event_id", "equalto", event.id) | list %}
                     {% if user_orders %}
                     <li class="mb-4 p-3" style="border: 1px solid #ddd; border-radius: 8px;">
                         <div class="me-3" style="flex: 0 0 150px;">

@@ -175,7 +175,6 @@ def cancel_order(order_id):
 def upcoming_view():
     """Shows only the user's future event bookings."""
     user_orders = Order.query.filter_by(user_id=current_user.id).all()
-
     event_ids = {order.event_id for order in user_orders}
 
     # Only events whose date is in the future or today
@@ -184,7 +183,12 @@ def upcoming_view():
         Event.event_date >= datetime.now().date()
     ).order_by(Event.event_date.asc()).all()
 
-    return render_template("UpcomingEvent.html", events=events)
+    print("=== DEBUG ===")
+    print("User Orders:", [(o.id, o.event_id, o.user_id) for o in user_orders])
+    print("Events Returned:", [(e.id, e.title) for e in events])
+    print("================")
+
+    return render_template("UpcomingEvent.html", events=events, user_orders=user_orders)
 
 
 # Route for Past Bookings
@@ -200,7 +204,6 @@ def history_view():
     # Query those events
     events = Event.query.filter(Event.id.in_(past_event_ids)).order_by(Event.event_date.desc()).all()
     
-    return render_template(
-        "history.html", events=events, active_tab="past")
+    return render_template("history.html", events=events, active_tab="past")
 
     # test
