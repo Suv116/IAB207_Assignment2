@@ -7,7 +7,7 @@ from werkzeug.utils import secure_filename
 
 from .models import User, OrganisationType, Genre, Event, Ticket, EventImage, Comment, Order
 from . import db
-
+from sqlalchemy import cast, Date
 event_bp = Blueprint("event", __name__)
 
 @event_bp.route("/create-event", methods=["GET", "POST"])
@@ -78,7 +78,7 @@ def create_event():
             db.session.rollback()
             flash("Error creating event. Please check your information and try again.", "danger")
 
-    return render_template("CreateEvent.html")
+    return render_template("createEvent.html")
 
 @event_bp.route("/event/<int:event_id>/comment", methods=["POST"])
 @login_required
