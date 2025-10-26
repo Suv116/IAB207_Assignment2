@@ -1,7 +1,8 @@
 from flask_wtf import FlaskForm
 from wtforms import DateTimeLocalField, SelectField, FloatField
 from wtforms.fields import TextAreaField, SubmitField, StringField, PasswordField
-from wtforms.validators import InputRequired, Length, Email, EqualTo, Regexp, DataRequired
+from wtforms.validators import InputRequired, Length, Email, EqualTo, Regexp, DataRequired, ValidationError
+from .models import User
 
 # creates the login information
 class LoginForm(FlaskForm):
@@ -12,37 +13,61 @@ class LoginForm(FlaskForm):
 
 # this is the registration form
 class RegisterForm(FlaskForm):
-    user_name = StringField("User Name", validators=[InputRequired()])
-    email = StringField("Email Address", validators=[Email("Please enter a valid email")])
+    user_name = StringField(
+        "User Name",
+        validators=[InputRequired("Please enter your username")]
+    )
+
+    email = StringField(
+        "Email Address",
+        validators=[InputRequired("Please enter your email"), Email("Please enter a valid email")]
+    )
+
     phone_number = StringField(
         "Phone Number",
         validators=[
             InputRequired("Please enter your phone number"),
             Length(min=8, max=15, message="Phone number must be between 8 and 15 digits"),
             Regexp(
-                regex=r'^\d+$',
+                regex=r'^[\d\s+\-()]+$',
                 message="Phone number can only contain digits, spaces, '+', '-', or parentheses"
             )
         ]
     )
 
-    # Password criteria
-    password = PasswordField("Password", 
+    password = PasswordField(
+        "Password",
         validators=[
-            InputRequired(), 
-            Length(min=6),
+            InputRequired("Please enter your password"),
+            Length(min=6, message="Password must be at least 6 characters long"),
             Regexp(
                 regex=r'^(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).+$',
                 message="Password must contain at least one number and one special character"
-            )           
+            )
         ]
     )
 
-    # linking two fields - password should be equal to data entered in confirm                                                    
-    confirm = PasswordField("Confirm Password", validators=[InputRequired(), EqualTo('password', message="Passwords should match")])
+    confirm = PasswordField(
+        "Confirm Password",
+        validators=[
+            InputRequired("Please confirm your password"),
+            EqualTo('password', message="Passwords must match")
+        ]
+    )
 
-    # submit button
     submit = SubmitField("Register")
+
+    # --- Custom validator for unique email ---
+    def validate_email(self, email):
+        existing_user = User.query.filter_by(email=email.data).first()
+        if existing_user:
+            raise ValidationError("This email is already registered. Please use a different one.")
+
+    # --- Optional: custom validator for unique username ---
+    def validate_user_name(self, user_name):
+        existing_user = User.query.filter_by(username=user_name.data).first()
+        if existing_user:
+            raise ValidationError("This username is already taken. Please choose another.")
 
 
 class EventForm(FlaskForm):

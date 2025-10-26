@@ -56,21 +56,36 @@
 
             <!-- Event Info -->
             <div class="event-info">
-                <p><strong>Date:</strong> {{ event.event_date.strftime('%A, %b %d, %Y') }}</p>
-                <p><strong>Time:</strong> {{ event.start_time.strftime('%I:%M %p') }} – {{
-                    event.end_time.strftime('%I:%M %p') }}</p>
-                <p><strong>Venue:</strong> {{ event.venue }}</p>
-                <p><strong>Status:</strong> {{ event.status.value|capitalize }}</p>
-                <p><strong>Genre:</strong> {{ event.genre.value|capitalize }}</p>
+    <p><strong>Date:</strong><br>
+        {{ event.event_date.strftime('%A, %b %d, %Y') }}
+    </p>
 
-                <p><strong>Prices:</strong><br>
-                    {% for ticket in event.tickets %}
-                    {{ ticket.ticket_type }} - ${{ '%.2f'|format(ticket.price) }} <br>
-                    {% endfor %}
-                </p>
+    <p><strong>Time:</strong><br>
+        {{ event.start_time.strftime('%I:%M %p') }} – {{ event.end_time.strftime('%I:%M %p') }}
+    </p>
 
-                <p><strong>Description:</strong> {{ event.description }}</p>
-            </div>
+    <p><strong>Venue:</strong><br>
+        {{ event.venue }}
+    </p>
+
+    <p><strong>Status:</strong><br>
+        {{ event.status.value|capitalize }}
+    </p>
+
+    <p><strong>Genre:</strong><br>
+        {{ event.genre.value|capitalize }}
+    </p>
+
+    <p><strong>Prices:</strong><br>
+        {% for ticket in event.tickets %}
+        {{ ticket.ticket_type }} - ${{ '%.2f'|format(ticket.price) }}<br>
+        {% endfor %}
+    </p>
+
+    <p><strong>Description:</strong><br>
+        {{ event.description }}
+    </p>
+</div>
 
             <!-- Booking Section -->
             <div class="booking">
