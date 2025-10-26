@@ -289,42 +289,52 @@ ul.concertbookingline > li:before {
     margin: 0.5rem 0;
 }
 
-/* Details Styling */
+/* =========================
+   Details Page Styling
+   ========================= */
 
 #details-page .container {
     max-width: 900px;
     margin: 30px auto;
-    font-family: 'Bebas Neue', sans-serif;
-    background: #4C4C47;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-}
-
-#details-page h1 {
-    font-size: 36px;
-    margin-bottom: 10px;
-}
-
-#details-page .event-info {
-    margin-bottom: 20px;
-    font-size: 18px;
-    line-height: 1.6;
-}
-
-#details-page .booking {
-    max-width: 400px;
-    margin: 20px auto;
-    padding: 20px;
-    background: #e5dcc5;
-    border-radius: 12px;
+    background: #e5dcc5; /* same as event card background */
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    color: #2d2d2a;
     font-family: 'Oswald', sans-serif;
+}
+
+/* Title */
+#details-page h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.5rem;
+    letter-spacing: 1px;
+    color: #2d2d2a;
+    margin-bottom: 0.5rem;
+}
+
+/* Event Info */
+#details-page .event-info {
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+    color: #3a3a3a;
+}
+
+/* Booking Section */
+#details-page .booking {
+    max-width: 450px;
+    margin: 30px auto;
+    padding: 20px;
+    background: #4C4C47; /* reversed palette for contrast */
+    border-radius: 12px;
+    color: #fff;
 }
 
 #details-page .booking h2 {
     font-family: 'Bebas Neue', sans-serif;
     letter-spacing: 1px;
-    font-size: 28px;
+    font-size: 1.8rem;
     margin-bottom: 15px;
 }
 
@@ -333,59 +343,93 @@ ul.concertbookingline > li:before {
 }
 
 #details-page .booking input,
+#details-page .booking select,
 #details-page .booking button,
 #details-page .add-comment textarea {
     border-radius: 8px;
     padding: 10px;
     border: 1px solid #ccc;
     width: 100%;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.95rem;
 }
 
+/* Booking Button */
 #details-page .booking button {
     background: #2d2d2a;
-    color: white;
+    color: #fff;
     border: none;
     cursor: pointer;
     margin-top: 10px;
+    transition: background-color 0.2s ease;
 }
 
+#details-page .booking button:hover {
+    background: #44403c;
+}
+
+/* Comments Section */
 #details-page .comments {
-    margin-top: 30px;
+    margin-top: 40px;
 }
 
 #details-page .comments h2 {
-    font-size: 28px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.8rem;
     margin-bottom: 15px;
+    color: #2d2d2a;
 }
 
+/* Individual Comment */
 #details-page .comment {
-    background: #f1f1f1;
-    padding: 10px;
-    border-radius: 8px;
-    margin-bottom: 10px;
-    color: #4C4C47;
+    background: #f3e9cc; /* slightly warmer, more visible than #fff */
+    padding: 14px 16px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    color: #2d2d2a;
     font-family: 'Oswald', sans-serif;
-    font-size: 0.85rem;
+    font-size: 0.95rem;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08);
+    border-left: 4px solid #2d2d2a; /* subtle accent line */
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
+/* Hover effect for better interactivity */
+#details-page .comment:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+}
+
+/* Add Comment Section */
 #details-page .add-comment textarea {
     width: 100%;
-    height: 80px;
+    height: 90px;
     margin-bottom: 10px;
     border-radius: 8px;
     border: 1px solid #ccc;
-    padding: 8px;
-    font-family: Arial, sans-serif;
+    padding: 10px;
+    font-family: 'Oswald', sans-serif;
+    font-size: 0.9rem;
+}
+#details-page .add-comment h3 {
+    font-family: 'Oswald', sans-serif;
 }
 
 #details-page .add-comment button {
-    background: #444;
-    color: white;
+    background: #2d2d2a;
+    color: #fff;
     border: none;
-    padding: 10px 15px;
+    padding: 10px 20px;
     border-radius: 8px;
     cursor: pointer;
+    font-family: 'Oswald', sans-serif;
+    transition: background-color 0.2s ease;
 }
+
+#details-page .add-comment button:hover {
+    background: #44403c;
+}
+
 
 /* Events Styling */
 

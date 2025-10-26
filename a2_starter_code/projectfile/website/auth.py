@@ -51,29 +51,20 @@ def signup():
         phone_number = form.phone_number.data
         password = form.password.data
 
-        existing_user = db.session.scalar(
-            db.select(User).where(User.username == username)
-        )
-        if existing_user:
-            flash("Username already exists", "danger")
-            return redirect(url_for("auth.signup"))
-        
-        existing_email = db.session.scalar(
-            db.select(User).where(User.email == email)
-        )
+        # Check username
+        if User.query.filter_by(username=username).first():
+            form.user_name.errors.append("Username already exists. Please choose another.")
+            return render_template("signup.html", form=form, heading="Sign Up")
 
-        if existing_email:
-            flash("Email already in use. Please choose another one.", "danger")
-            return redirect(url_for("auth.signup"))
-        
-        existing_phone = db.session.scalar(
-            db.select(User).where(User.phone_number == phone_number)
-        )
-        if existing_phone:
-            flash("Phone number already in use. Please use another number.", "danger")
-            return redirect(url_for("auth.signup"))
-        
-    
+        # Check email
+        if User.query.filter_by(email=email).first():
+            form.email.errors.append("Email already in use. Please choose another.")
+            return render_template("signup.html", form=form, heading="Sign Up")
+
+        # Check phone
+        if User.query.filter_by(phone_number=phone_number).first():
+            form.phone_number.errors.append("Phone number already in use. Please use another.")
+            return render_template("signup.html", form=form, heading="Sign Up")
 
         # Hash password
         hashed_password = generate_password_hash(password).decode("utf-8")
@@ -93,5 +84,6 @@ def signup():
         return redirect(url_for("auth.login"))
 
     return render_template("signup.html", form=form, heading="Sign Up")
+
 
 

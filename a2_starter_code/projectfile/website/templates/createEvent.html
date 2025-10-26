@@ -13,11 +13,11 @@
                             <form method="POST" action="{{ url_for('event.create_event') }}"
                                   enctype="multipart/form-data">
 
-                               {% for category, message in get_flashed_messages(with_categories=true) %}
-                                  <div class="alert alert-{{ category }}" role="alert">
-                                       {{ message }}
-                                  </div>
-                               {% endfor %}
+                                {% for category, message in get_flashed_messages(with_categories=true) %}
+                                <div class="alert alert-{{ category }}" role="alert">
+                                    {{ message }}
+                                </div>
+                                {% endfor %}
 
                                 <!-- Concert Name -->
                                 <div class="section-header">Concert Name</div>
@@ -92,6 +92,11 @@
                                 <div class="section-header">Carousel Images</div>
                                 <input type="file" name="carousel_images" class="form-control form-control-lg"
                                        multiple/>
+
+                                <small class="form-text text-muted mt-1">
+                                    Recommended image ratio: approximately <strong>2 : 1</strong> (e.g., 1200×600px or
+                                    1920×800px)
+                                </small>
 
                                 <!-- Submit -->
                                 <div class="d-flex justify-content-center mt-4">
