@@ -170,7 +170,7 @@ def cancel_order(order_id):
     flash(f"Your booking for {order.event.title} ({order.ticket.ticket_type}) has been cancelled.", "success")
     return redirect(url_for("event.upcoming"))
 # Upcoming Events Route
-@event_bp.route("/upcoming", endpoint="upcoming")
+@event_bp.route("/upcoming-event", endpoint="upcoming")
 @login_required
 def upcoming_view():
     """Shows only the user's future event bookings."""
