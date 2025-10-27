@@ -202,11 +202,7 @@ def delete_event(event_id):
     flash('Event cancelled successfully.', 'success')
     return redirect(url_for('main.update_event'))
 
-# Upcoming events page
-@main_bp.route('/upcoming-event')
-@login_required
-def upcoming_event():
-    return render_template('UpcomingEvent.html')
+
 
 # Event history page
 @main_bp.route('/history')

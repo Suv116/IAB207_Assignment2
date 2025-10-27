@@ -564,7 +564,6 @@ ul.concertbookingline > li:before {
 .Text-section p.order, p.status {
     font-size: 0.75rem;
     margin-bottom: 2px;
-
 }
 
 .concert-title {
@@ -580,29 +579,90 @@ ul.concertbookingline > li:before {
 .booking-buttons {
     border-radius: 8px;
     padding: 0.75rem;
+    margin-top: 10px;
+}
+
+.booking-buttons .btn {
+    font-size: 0.85rem;
+    padding: 5px 14px;
+    border-radius: 8px;
 }
 
 .booking-buttons .btn-outline-dark {
-    color: white;
+    border: 1px solid #2d2d2a;
+    color: #2d2d2a;
+    background: transparent;
 }
 
-.section-divider {
-    margin: 0.5rem 0;
+.booking-buttons .btn-outline-dark:hover {
+    background-color: #2d2d2a;
+    color: #fff;
 }
 
-.section-img {
-    border: 4px solid #e0d8c0; /* stylistic border color */
-    border-radius: 12px;        /* rounded corners */
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* subtle shadow */
-    transition: transform 0.3s, box-shadow 0.3s;
+.booking-buttons .btn-danger {
+    background-color: #C14953;
+    border: none;
 }
 
-.section-img:hover {
-    transform: translateY(-5px); /* slight lift on hover */
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4); /* deeper shadow */
+.booking-buttons .btn-danger:hover {
+    background-color: #a43b45;
 }
 
 
+.event-card-wrapper {
+    background: #e5dcc5;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+    padding: 20px;
+    transition: all 0.3s ease;
+    margin: 30px 0;
+}
 
+.event-card-wrapper:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+}
 
+.event-image img {
+    width: 180px;
+    height: 130px;
+    border-radius: 10px;
+    object-fit: cover;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+}
 
+.event-info {
+    font-family: 'Oswald', sans-serif;
+    color: #2d2d2a;
+}
+
+.event-title a {
+    color: #2d2d2a;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.5rem;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.event-title a:hover {
+    color: #C14953;
+}
+
+.event-meta {
+    font-size: 0.95rem;
+    color: #3a3a3a;
+}
+
+.event-genre, .event-order, .event-ticket {
+    font-size: 0.9rem;
+    color: #44403c;
+}
+
+.status-badge {
+    background-color: #C14953;
+    color: #fff;
+    font-size: 0.8rem;
+    padding: 4px 10px;
+    border-radius: 8px;
+    font-family: 'Oswald', sans-serif;
+}

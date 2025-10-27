@@ -1,7 +1,7 @@
 import os
-from flask import Flask
+from flask import Flask, session
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager
+from flask_login import LoginManager, logout_user
 from flask_bootstrap5 import Bootstrap
 
 # create a global SQLAlchemy object
@@ -37,6 +37,16 @@ def create_app():
     @login_manager.user_loader
     def load_user(user_id):
         return db.session.scalar(db.select(User).where(User.id == user_id))
+
+    @app.before_request
+    def clear_login_once():
+        if not hasattr(app, "_login_cleared"):
+            from flask_login import logout_user
+            from flask import session
+
+            session.clear()
+            logout_user()
+            app._login_cleared = True  # ensures this runs only once
 
     # Register blueprints
     from . import views
