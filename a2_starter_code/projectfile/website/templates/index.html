@@ -36,9 +36,9 @@
 
     <div class="container-fluid mt-3">
         <h3>Trending Now</h3>
-        <a href="Events.html"
+        <a href="{{ url_for('main.events') }}"
            class="btn btn-sm btn-link p-0"
-           style="font-size: 0.8rem; color: #2D2D2A; transition: color 0.2s;"
+           style="font-size: 1rem; color: #2D2D2A; font-family: 'Oswald', sans-serif; transition: color 0.2s;"
            onmouseover="this.style.color='#ffffff'"
            onmouseout="this.style.color='#2D2D2A'">
             See More
@@ -53,16 +53,14 @@
                          alt="Event image">
                     <div class="card-body p-2 d-flex flex-column">
                         <h6 class="card-title mb-1">{{ event.title }}</h6>
-                        <div class="mt-auto">
-                            <p class="card-text small mb-2">
-                                {{ event.event_date.strftime('%b %d, %Y') }} · {{ event.venue }} · Status: {{
-                                event.status.value }}
-                            </p>
-                            <a href="{{ url_for('main.details', event_id=event.id) }}"
-                               class="btn btn-primary btn-sm w-100">See Details</a>
-
-
-                        </div>
+                        <p class="card-text small mb-2">
+                            {{ event.event_date.strftime('%b %d, %Y') }} · {{ event.venue }} · Status: {{
+                            event.status.value }}
+                        </p>
+                        <a href="{{ url_for('main.details', event_id=event.id) }}"
+                           class="btn btn-primary btn-sm mt-auto w-100">
+                            See Details
+                        </a>
                     </div>
                 </div>
             </div>
@@ -72,12 +70,12 @@
 
         <hr class="section-divider">
 
-        <div class="container-fluid mt-3">
+        <div class="container-fluid mt-3 upcoming-section">
             <h3>Upcoming</h3>
-            <p>View several upcoming concerts in your area!</p>
-            <a href="Events.html"
+            <p class="mb-1">View several upcoming concerts in your area!</p>
+            <a href="{{ url_for('main.events') }}"
                class="btn btn-sm btn-link p-0"
-               style="font-size: 0.8rem; color: #2D2D2A; transition: color 0.2s;"
+               style="font-size: 1rem; color: #2D2D2A; font-family: 'Oswald', sans-serif; transition: color 0.2s;"
                onmouseover="this.style.color='#ffffff'"
                onmouseout="this.style.color='#2D2D2A'">
                 See More
@@ -92,14 +90,14 @@
                              alt="Event image">
                         <div class="card-body p-2 d-flex flex-column">
                             <h6 class="card-title mb-1">{{ event.title }}</h6>
-                            <div class="mt-auto">
-                                <p class="card-text small mb-2">
-                                    {{ event.event_date.strftime('%b %d, %Y') }} · {{ event.venue }} · Status: {{
-                                    event.status.value }}
-                                </p>
-                                <a href="{{ url_for('main.details', event_id=event.id) }}"
-                                   class="btn btn-primary btn-sm w-100">See Details</a>
-                            </div>
+                            <p class="card-text small mb-2">
+                                {{ event.event_date.strftime('%b %d, %Y') }} · {{ event.venue }} · Status: {{
+                                event.status.value }}
+                            </p>
+                            <a href="{{ url_for('main.details', event_id=event.id) }}"
+                               class="btn btn-primary btn-sm mt-auto w-100">
+                                See Details
+                            </a>
                         </div>
                     </div>
                 </div>
@@ -122,44 +120,42 @@
                         </div>
                         <div class="col-md-6 d-flex flex-column">
                             <h2 class="mb-3">Grunge</h2>
-                            <p class="mb-4">Grunge music emerged in Seattle during the late 1980s, blending the
-                                intensity of
-                                punk with the heaviness of metal through distorted guitars and emotionally charged
-                                lyrics.
-                                Popularized by bands like Nirvana, Pearl Jam, and Soundgarden, it defined 1990s
-                                alternative rock
-                                with its gritty sound and anti-glamour style.</p>
-                            <div class="row row-cols-1 row-cols-md-2 g-3 flex-grow-1">
+                            <p class="mb-4">
+                                Grunge music emerged in Seattle during the late 1980s, blending the
+                                intensity of punk with the heaviness of metal through distorted guitars
+                                and emotionally charged lyrics. Popularized by bands like Nirvana, Pearl
+                                Jam, and Soundgarden, it defined 1990s alternative rock with its gritty
+                                sound and anti-glamour style.
+                            </p>
+
+                            <div class="row row-cols-1 row-cols-md-2 g-4">
+                                {% for event in grunge_events %}
                                 <div class="col">
-                                    <div class="card h-100" style="background-color: #e5dcc5;">
-                                        <img src="/static/Kurt.jpg" class="card-img-top minisection-img" alt="Event 1">
-                                        <div class="card-body d-flex flex-column">
-                                            <h5 class="card-title">Nirvana Tribute</h5>
-                                            <p class="card-text">Celebrate the legacy of Nirvana with a powerful tribute
-                                                set
-                                                featuring anthems like “Smells Like Teen Spirit” and “Come As You
-                                                Are.”</p>
-                                            <p class="card-text">Oct 18, 2025 · Fortitude Music Hall · Status: Open</p>
-                                            <a href="Details.html" class="btn btn-dark mt-auto">See More</a>
+                                    <div class="card h-100 genre-card">
+                                        <img class="card-img-top event-img"
+                                             src="{{ url_for('static', filename='uploads/' ~ event.photo) if event.photo else url_for('static', filename='default.jpg') }}"
+                                             alt="{{ event.title }} image">
+
+                                        <div class="card-body d-flex flex-column p-3">
+                                            <h5 class="card-title mb-1">{{ event.title }}</h5>
+                                            <p class="card-text small mb-2">
+                                                {{ event.event_date.strftime('%b %d, %Y') }} · {{ event.venue }}
+                                            </p>
+                                            <p class="card-text text-muted mb-3" style="flex-grow: 1;">
+                                                {{ event.description[:150] }}{% if event.description|length > 150
+                                                %}...{% endif %}
+                                            </p>
+                                            <p class="card-text small mb-2">
+                                                <strong>Status:</strong> {{ event.status.value|capitalize }}
+                                            </p>
+                                            <a href="{{ url_for('main.details', event_id=event.id) }}"
+                                               class="btn btn-dark btn-sm mt-auto w-100">
+                                                See Details
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col">
-                                    <div class="card h-100" style="background-color: #e5dcc5;">
-                                        <img src="/static/Stone%20Temple%20Pilots.jpg"
-                                             class="card-img-top minisection-img"
-                                             alt="Event 2">
-                                        <div class="card-body d-flex flex-column">
-                                            <h5 class="card-title">Stone Temple Pilots</h5>
-                                            <p class="card-text"> Catch the legendary Stone Temple Pilots performing
-                                                grunge
-                                                classics like “Interstate Love Song” and “Plush” in an unforgettable
-                                                night.
-                                            <p class="card-text">Oct 21, 2025 · Fortitude Music Hall · Status: Open</p>
-                                            <a href="Details.html" class="btn btn-dark mt-auto">See More</a>
-                                        </div>
-                                    </div>
-                                </div>
+                                {% endfor %}
                             </div>
                         </div>
                     </div>
@@ -180,133 +176,134 @@
                                 Led Zeppelin, The Rolling Stones, and Pink Floyd, it became the soundtrack of a
                                 generation,
                                 defining the era.</p>
-                            <div class="row row-cols-1 row-cols-md-2 g-3 flex-grow-1">
+                            <div class="row row-cols-1 row-cols-md-2 g-4">
+                                {% for event in seventies_events %}
                                 <div class="col">
-                                    <div class="card h-100" style="background-color: #e5dcc5;">
-                                        <img src="/static/LedZep2.jpg" class="card-img-top minisection-img"
-                                             alt="Event 3">
-                                        <div class="card-body d-flex flex-column">
-                                            <h5 class="card-title">Led Zep Experience</h5>
-                                            <p class="card-text">Relive the magic of Led Zeppelin with epic renditions
-                                                of
-                                                “Stairway to Heaven” and “Whole Lotta Love.”</p>
-                                            <p class="card-text">Nov 2, 2025 · Princess Theatre · Status: Open</p>
-                                            <a href="Details.html" class="btn btn-dark mt-auto">See More</a>
+                                    <div class="card h-100 genre-card">
+                                        <img class="card-img-top event-img"
+                                             src="{{ url_for('static', filename='uploads/' ~ event.photo) if event.photo else url_for('static', filename='default.jpg') }}"
+                                             alt="{{ event.title }} image">
+
+                                        <div class="card-body d-flex flex-column p-3">
+                                            <h5 class="card-title mb-1">{{ event.title }}</h5>
+                                            <p class="card-text small mb-2">
+                                                {{ event.event_date.strftime('%b %d, %Y') }} · {{ event.venue }}
+                                            </p>
+                                            <p class="card-text text-muted mb-3" style="flex-grow: 1;">
+                                                {{ event.description[:150] }}{% if event.description|length > 150
+                                                %}...{% endif %}
+                                            </p>
+                                            <p class="card-text small mb-2">
+                                                <strong>Status:</strong> {{ event.status.value|capitalize }}
+                                            </p>
+                                            <a href="{{ url_for('main.details', event_id=event.id) }}"
+                                               class="btn btn-dark btn-sm mt-auto w-100">
+                                                See Details
+                                            </a>
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col">
-                                    <div class="card h-100" style="background-color: #e5dcc5;">
-                                        <img src="/static/PinkFloyd1.jpg" class="card-img-top minisection-img"
-                                             alt="Event 4">
-                                        <div class="card-body d-flex flex-column">
-                                            <h5 class="card-title">Pink Floyd Tribute</h5>
-                                            <p class="card-text">Immerse yourself in psychedelic classics like
-                                                “Comfortably
-                                                Numb” and “Wish You Were Here.”</p>
-                                            <p class="card-text">Nov 6, 2025 · Fortitude Music Hall · Status: Open</p>
-                                            <a href="Details.html" class="btn btn-dark mt-auto">See More</a>
-                                        </div>
-                                    </div>
-                                </div>
+                                {% endfor %}
+
                             </div>
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Southern Rock Section (Image Left) -->
-                <div class="container my-5">
-                    <div class="row align-items-stretch">
-                        <div class="col-md-6 mb-4 mb-md-0 d-flex">
-                            <img src="/static/Skynrd.jpg" class="img-fluid section-img" alt="Southern Rock">
-                        </div>
-                        <div class="col-md-6 d-flex flex-column">
-                            <h2 class="mb-3">Southern Rock</h2>
-                            <p class="mb-4">Southern rock emerged in the 1970s, blending rock, country, and blues with
-                                gritty
-                                guitar riffs and soulful vocals. Led by bands like Lynyrd Skynyrd, The Allman Brothers
-                                Band, and
-                                ZZ Top, it captured the spirit of the American South, combining storytelling with
-                                high-energy
-                                performances and a distinct regional style.</p>
-                            <div class="row row-cols-1 row-cols-md-2 g-3 flex-grow-1">
-                                <div class="col">
-                                    <div class="card h-100" style="background-color: #e5dcc5;">
-                                        <img src="/static/LynrdSkynrd.jpg" class="card-img-top minisection-img"
-                                             alt="Event 5">
-                                        <div class="card-body d-flex flex-column">
-                                            <h5 class="card-title">Lynrd Skynrd Tribute</h5>
-                                            <p class="card-text">Sing along to southern rock staples including “Sweet
-                                                Home
-                                                Alabama” and “Free Bird.”</p>
-                                            <p class="card-text">Nov 15, 2025 · Princess Theatre · Status: Open</p>
-                                            <a href="Details.html" class="btn btn-dark mt-auto">See More</a>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="card h-100" style="background-color: #e5dcc5;">
-                                        <img src="/static/AllmanBrothers.jpg" class="card-img-top minisection-img"
-                                             alt="Event 6">
-                                        <div class="card-body d-flex flex-column">
-                                            <h5 class="card-title">The Allman Brothers Experience</h5>
-                                            <p class="card-text">Experience southern rock brilliance with classics like
-                                                “Ramblin’ Man” and “Midnight Rider.”</p>
-                                            <p class="card-text">Nov 18, 2025 · Princess Theatre · Status: Open</p>
-                                            <a href="Details.html" class="btn btn-dark mt-auto">See More</a>
-                                        </div>
+            <!-- Southern Rock Section (Image Left) -->
+            <div class="container my-5">
+                <div class="row align-items-stretch">
+                    <div class="col-md-6 mb-4 mb-md-0 d-flex">
+                        <img src="/static/Skynrd.jpg" class="img-fluid section-img" alt="Southern Rock">
+                    </div>
+                    <div class="col-md-6 d-flex flex-column">
+                        <h2 class="mb-3">Southern Rock</h2>
+                        <p class="mb-4">Southern rock emerged in the 1970s, blending rock, country, and blues with
+                            gritty
+                            guitar riffs and soulful vocals. Led by bands like Lynyrd Skynyrd, The Allman Brothers
+                            Band, and
+                            ZZ Top, it captured the spirit of the American South, combining storytelling with
+                            high-energy
+                            performances and a distinct regional style.</p>
+                        <div class="row row-cols-1 row-cols-md-2 g-4">
+                            {% for event in southern_rock_events %}
+                            <div class="col">
+                                <div class="card h-100 genre-card">
+                                    <img class="card-img-top event-img"
+                                         src="{{ url_for('static', filename='uploads/' ~ event.photo) if event.photo else url_for('static', filename='default.jpg') }}"
+                                         alt="{{ event.title }} image">
+
+                                    <div class="card-body d-flex flex-column p-3">
+                                        <h5 class="card-title mb-1">{{ event.title }}</h5>
+                                        <p class="card-text small mb-2">
+                                            {{ event.event_date.strftime('%b %d, %Y') }} · {{ event.venue }}
+                                        </p>
+                                        <p class="card-text text-muted mb-3" style="flex-grow: 1;">
+                                            {{ event.description[:150] }}{% if event.description|length > 150 %}...{%
+                                            endif %}
+                                        </p>
+                                        <p class="card-text small mb-2">
+                                            <strong>Status:</strong> {{ event.status.value|capitalize }}
+                                        </p>
+                                        <a href="{{ url_for('main.details', event_id=event.id) }}"
+                                           class="btn btn-dark btn-sm mt-auto w-100">
+                                            See Details
+                                        </a>
                                     </div>
                                 </div>
                             </div>
+
+                            {% endfor %}
                         </div>
                     </div>
                 </div>
+            </div>
 
-                <!-- Metal Section (Image Right) -->
-                <div class="container my-5">
-                    <div class="row align-items-stretch">
-                        <div class="col-md-6 order-md-2 mb-4 mb-md-0 d-flex">
-                            <img src="/static/Behemoth.jpg" class="img-fluid section-img" alt="Metal">
-                        </div>
-                        <div class="col-md-6 order-md-1 d-flex flex-column">
-                            <h2 class="mb-3">Metal</h2>
-                            <p class="mb-4">Metal music emerged in the late 1960s and 1970s, building on hard rock with
-                                heavier
-                                riffs, aggressive rhythms, and powerful vocals. Pioneered by bands like Black Sabbath,
-                                Iron
-                                Maiden, and Judas Priest, it became known for its intense sound, dark themes, and
-                                theatrical
-                                performances, influencing countless subgenres and shaping the face of heavy music.</p>
-                            <div class="row row-cols-1 row-cols-md-2 g-3 flex-grow-1">
-                                <div class="col">
-                                    <div class="card h-100" style="background-color: #e5dcc5;">
-                                        <img src="/static/Metallica1.jpg" class="card-img-top minisection-img"
-                                             alt="Event 7">
-                                        <div class="card-body d-flex flex-column">
-                                            <h5 class="card-title">Metallica</h5>
-                                            <p class="card-text">Brace yourself for a thunderous set of heavy metal
-                                                anthems
-                                                including “Enter Sandman” and “Master of Puppets.”</p>
-                                            <p class="card-text">Oct 25, 2025 · Suncorp Stadium · Status: Sold Out</p>
-                                            <a href="Details.html" class="btn btn-dark mt-auto">See More</a>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col">
-                                    <div class="card h-100" style="background-color: #e5dcc5;">
-                                        <img src="/static/Black%20Sabbath.jpg" class="card-img-top minisection-img"
-                                             alt="Event 8">
-                                        <div class="card-body d-flex flex-column">
-                                            <h5 class="card-title">Black Sabbath Tribute</h5>
-                                            <p class="card-text">Pay tribute to the pioneers of metal with iconic tracks
-                                                like
-                                                “Paranoid” and “Iron Man.”</p>
-                                            <p class="card-text">Sep 28, 2025 · Fortitude Music Hall · Status: Open</p>
-                                            <a href="Details.html" class="btn btn-dark mt-auto">See More</a>
-                                        </div>
+            <!-- Metal Section (Image Right) -->
+            <div class="container my-5">
+                <div class="row align-items-stretch">
+                    <div class="col-md-6 order-md-2 mb-4 mb-md-0 d-flex">
+                        <img src="/static/Behemoth.jpg" class="img-fluid section-img" alt="Metal">
+                    </div>
+                    <div class="col-md-6 order-md-1 d-flex flex-column">
+                        <h2 class="mb-3">Metal</h2>
+                        <p class="mb-4">Metal music emerged in the late 1960s and 1970s, building on hard rock with
+                            heavier
+                            riffs, aggressive rhythms, and powerful vocals. Pioneered by bands like Black Sabbath,
+                            Iron
+                            Maiden, and Judas Priest, it became known for its intense sound, dark themes, and
+                            theatrical
+                            performances, influencing countless subgenres and shaping the face of heavy music.</p>
+                        <div class="row row-cols-1 row-cols-md-2 g-4">
+                            {% for event in metal_events %}
+                            <div class="col">
+                                <div class="card h-100 genre-card">
+                                    <img class="card-img-top event-img"
+                                         src="{{ url_for('static', filename='uploads/' ~ event.photo) if event.photo else url_for('static', filename='default.jpg') }}"
+                                         alt="{{ event.title }} image">
+
+                                    <div class="card-body d-flex flex-column p-3">
+                                        <h5 class="card-title mb-1">{{ event.title }}</h5>
+                                        <p class="card-text small mb-2">
+                                            {{ event.event_date.strftime('%b %d, %Y') }} · {{ event.venue }}
+                                        </p>
+                                        <p class="card-text text-muted mb-3" style="flex-grow: 1;">
+                                            {{ event.description[:150] }}{% if event.description|length > 150 %}...{%
+                                            endif %}
+                                        </p>
+                                        <p class="card-text small mb-2">
+                                            <strong>Status:</strong> {{ event.status.value|capitalize }}
+                                        </p>
+                                        <a href="{{ url_for('main.details', event_id=event.id) }}"
+                                           class="btn btn-dark btn-sm mt-auto w-100">
+                                            See Details
+                                        </a>
                                     </div>
                                 </div>
                             </div>
+
+                            {% endfor %}
                         </div>
                     </div>
                 </div>
@@ -314,5 +311,6 @@
 
         </div>
     </div>
+</div>
 </div>
 {% endblock %}

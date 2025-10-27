@@ -14,27 +14,56 @@ main_bp = Blueprint('main', __name__)
 # Home page
 @main_bp.route('/')
 def index():
-    trending_events = Event.query.order_by(Event.event_date.asc()).limit(6).all()
-    upcoming_events = Event.query.order_by(Event.event_date.asc()).offset(6).limit(6).all()
+    today = datetime.datetime.now().date()
+
+    trending_events = (
+        Event.query.filter(Event.event_date >= today)
+        .order_by(Event.event_date.asc())
+        .limit(6)
+        .all()
+    )
+
+    upcoming_events = (
+        Event.query.filter(Event.event_date >= today)
+        .order_by(Event.event_date.asc())
+        .offset(6)
+        .limit(6)
+        .all()
+    )
+
+    # Fetch top genre events dynamically
+    grunge_events = Event.query.filter_by(genre=Genre.GRUNGE).limit(2).all()
+    seventies_events = Event.query.filter_by(genre=Genre.SEVENTIES ).limit(2).all()
+    southern_rock_events = Event.query.filter_by(genre=Genre.SOUTHERN).limit(2).all()
+    metal_events = Event.query.filter_by(genre=Genre.METAL).limit(2).all()
 
     return render_template(
         "index.html",
         trending_events=trending_events,
-        upcoming_events=upcoming_events
+        upcoming_events=upcoming_events,
+        grunge_events=grunge_events,
+        seventies_events= seventies_events,
+        southern_rock_events=southern_rock_events,
+        metal_events=metal_events
     )
+
 
 # Events page
 @main_bp.route('/events')
 def events():
     query = Event.query
 
-    # Filters
+    # Get filters
+    search_query = request.args.get('q', '').strip()
     max_price = request.args.get('max_price', type=float)
     genres = request.args.getlist('genre')
     status = request.args.get('status')
     location = request.args.get('location', '').strip()
 
     # Apply filters
+    if search_query:
+        query = query.filter(Event.title.ilike(f"%{search_query}%"))
+
     if max_price is not None:
         query = query.outerjoin(Ticket).filter((Ticket.price <= max_price) | (Ticket.id.is_(None)))
 
@@ -56,6 +85,7 @@ def events():
     events = query.distinct().order_by(Event.event_date.asc()).all()
 
     return render_template("events.html", events=events)
+
 
 
 # Event detail page
@@ -172,17 +202,13 @@ def delete_event(event_id):
     flash('Event cancelled successfully.', 'success')
     return redirect(url_for('main.update_event'))
 
-# Upcoming events page
-@main_bp.route('/upcoming-event')
-@login_required
-def upcoming_event():
-    return render_template('UpcomingEvent.html')
+
 
 # Event history page
 @main_bp.route('/history')
 @login_required
 def history():
-    return render_template('History.html')
+    return render_template('history.html')
 
 # Logout
 @main_bp.route('/logout')

@@ -14,18 +14,20 @@
     <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald:wght@400;700&display=swap"
           rel="stylesheet">
 
+
     <!-- Custom CSS -->
-<link rel="stylesheet" href="{{ url_for('static', filename='style/main.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style/main.css') }}">
 </head>
 <body>
 
 <!-- Header -->
 <div class="container-fluid my-0 py-3 text-white" style="background-color: #C14953;">
     <div class="d-flex align-items-center">
-<img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="img-fluid me-3" style="max-width: 120px; height: auto;">
+        <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" class="img-fluid me-3"
+             style="max-width: 120px; height: auto;">
         <div>
             <h1 class="mb-1">LiveWire</h1>
-            <p class="mb-0">Your one and only website for any concert tickets of the rock variety</p>
+            <p class="mb-0" style="font-family: 'Oswald', sans-serif;">Your one and only website for any concert tickets of the rock variety</p>
         </div>
     </div>
 </div>
@@ -45,7 +47,8 @@
 
                 {% if current_user.is_authenticated %}
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="yourEventsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    <a class="nav-link dropdown-toggle" href="#" id="yourEventsDropdown" role="button"
+                       data-bs-toggle="dropdown" aria-expanded="false">
                         Your Events
                     </a>
                     <ul class="dropdown-menu" aria-labelledby="yourEventsDropdown">
@@ -63,12 +66,15 @@
             </ul>
 
             <!-- Search -->
-            <form class="d-flex flex-column flex-sm-row">
+            <form class="d-flex flex-column flex-sm-row" action="{{ url_for('main.events') }}" method="get">
                 <div class="input-group w-100 flex-column flex-sm-row">
-                    <input type="text" class="form-control mb-2 mb-sm-0 rounded-start" placeholder="Search events" aria-label="Search" style="min-width: 200px;">
-                    <input type="text" class="form-control mb-2 mb-sm-0" placeholder="Location" aria-label="Location" style="min-width: 200px;">
+                    <input type="text" class="form-control mb-2 mb-sm-0 rounded-start"
+                           name="q" placeholder="Search events" aria-label="Search" style="min-width: 200px; font-family: 'Oswald', sans-serif;">
+                    <input type="text" class="form-control mb-2 mb-sm-0"
+                           name="location" placeholder="Location" aria-label="Location" style="min-width: 200px; font-family: 'Oswald', sans-serif;">
                     <button class="btn rounded-end p-1 p-sm-2" type="submit" style="background: #4C4C47;">
-<img class="search-icon img-fluid" src="{{ url_for('static', filename='search.png') }}" alt="Search" style="height: 1.5em;">
+                        <img class="search-icon img-fluid" src="{{ url_for('static', filename='search.png') }}"
+                             alt="Search" style="height: 1.5em;">
                     </button>
                 </div>
             </form>

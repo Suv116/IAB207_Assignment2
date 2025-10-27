@@ -1,13 +1,25 @@
 {% extends "layout.html" %}
 
 {% block content %}
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% if messages %}
+{% for category, message in messages %}
+<div class="alert alert-{{ category }} alert-dismissible fade show mt-3" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endfor %}
+{% endif %}
+{% endwith %}
+
 <div class="container mt-5">
     <div class="container mt-5 text-center">
         <h2 class="mb-4">My Upcoming Bookings</h2>
 
         <div class="d-inline-flex p-3" style="border-radius:8px;">
-            <a href="History.html" class="btn btn-outline-dark btn-sm me-2" style="color: white">Past Bookings</a>
-            <button class="btn btn-dark btn-sm">Upcoming Bookings</button>
+            <a href="{{ url_for('event.history_view') }}" class="btn btn-outline-dark btn-sm me-2" style="color: white; font-family: 'Oswald', sans-serif;">Past
+                Bookings</a>
+        <button class="btn btn-dark btn-sm" style="color: white; font-family: 'Oswald', sans-serif;">Upcoming Bookings</button>
         </div>
     </div>
 
@@ -17,39 +29,61 @@
         <div class="row">
             <div class="col-md-6 offset-md-3">
                 <ul class="concertbookingline">
+                    {% for event in events %}
+                    {% set user_orders = user_orders | selectattr("event_id", "equalto", event.id) | list %}
+                    {% if user_orders %}
+                    {% set order = user_orders[0] %}
 
+                    <li class="event-card-item">
+                        <div class="event-card-wrapper d-flex align-items-center">
 
-                    <li>
-                        <a href="#" class="concert-title">Metallica</a>
-                        <div class="Text-section">
-                            <p class="date">Wed · Oct 25, 2025</p>
-                            <p class="location">Suncorp Stadium</p>
-                            <hr class="section-divider">
-                            <p class="order">ORDER #32-14533</p>
-                            <p class="status">Status: Sold Out</p>
+                            <!-- Left: Image -->
+                            <div class="event-image">
+                                {% if event.photo %}
+                                <img src="{{ url_for('static', filename='uploads/' ~ event.photo) }}"
+                                     alt="{{ event.title }}">
+                                {% else %}
+                                <img src="{{ url_for('static', filename='default_event.jpg') }}"
+                                     alt="Default event image">
+                                {% endif %}
+                            </div>
 
-                            <div class="booking-buttons">
-                                <a href="" class="btn btn-sm btn-outline-dark">View Ticket</a>
+                            <!-- Right: Info -->
+                            <div class="event-info flex-grow-1 ms-4">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <h4 class="event-title mb-1">
+                                        <a href="{{ url_for('main.details', event_id=event.id) }}">{{ event.title }}</a>
+                                    </h4>
+                                    <span class="status-badge">{{ event.status.value|capitalize }}</span>
+                                </div>
+                                <p class="event-meta mb-1">{{ event.event_date.strftime('%A · %b %d, %Y') }} · {{
+                                    event.venue }}</p>
+                                <p class="event-genre mb-1">Genre: {{ event.genre.name if event.genre else 'N/A' }}</p>
+                                <p class="event-order mb-2">Order #: {{ order.id }}</p>
+
+                                <div class="event-ticket mb-2">
+                                    <strong>Ticket:</strong> {{ order.ticket.ticket_type }} × {{ order.quantity }}
+                                    — ${{ "%.2f"|format(order.price) }}
+                                </div>
+
+                                <div class="booking-buttons mt-3">
+                                    <a href="{{ url_for('main.details', event_id=event.id) }}"
+                                       class="btn btn-sm btn-outline-dark me-2">View Ticket</a>
+                                    <form method="POST" action="{{ url_for('event.cancel_order', order_id=order.id) }}"
+                                          onsubmit="return confirm('Are you sure you want to cancel this booking?');"
+                                          class="d-inline">
+                                        <button type="submit" class="btn btn-sm btn-danger">Cancel</button>
+                                    </form>
+                                </div>
                             </div>
                         </div>
                     </li>
-
-                    <li>
-                        <a href="#" class="concert-title">The Doors GoGo Whiskey Tribute</a>
-                        <div class="Text-section">
-                            <p class="date">Sep 28, 2025</p>
-                            <p class="location">Princess Theatre</p>
-                            <hr class="section-divider">
-                            <p class="order">ORDER #32-14534</p>
-                            <p class="status">Status: Open</p>
-
-                            <div class="booking-buttons">
-                                <a href="" class="btn btn-sm btn-outline-dark">View Ticket</a>
-                            </div>
-                        </div>
-                    </li>
-
+                    {% endif %}
+                    {% else %}
+                    <p class="text-center mt-5">You don’t have any upcoming bookings yet.</p>
+                    {% endfor %}
                 </ul>
+
             </div>
         </div>
     </div>
