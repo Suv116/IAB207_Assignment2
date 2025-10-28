@@ -71,6 +71,14 @@
     <p><strong>Status:</strong><br>
         {{ event.status.value|capitalize }}
     </p>
+    <p><strong>Tickets Left:</strong>
+        {% set total_booked = event.orders|sum(attribute='quantity') %}
+        {% if event.attendees %}
+            {{ event.attendees - total_booked }}
+        {% else %}
+            N/A
+        {% endif %}
+    </p>
 
     <p><strong>Genre:</strong><br>
         {{ event.genre.value|capitalize }}

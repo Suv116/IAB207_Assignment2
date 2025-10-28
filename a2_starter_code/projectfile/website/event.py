@@ -5,7 +5,7 @@ from flask_login import login_required, current_user
 from datetime import datetime
 from werkzeug.utils import secure_filename
 
-from .models import User, OrganisationType, Genre, Event, Ticket, EventImage, Comment, Order
+from .models import EventStatus, User, OrganisationType, Genre, Event, Ticket, EventImage, Comment, Order
 from . import db
 from sqlalchemy import cast, Date
 event_bp = Blueprint("event", __name__)
@@ -118,6 +118,7 @@ def event_details(event_id):
 def book_tickets(event_id):
     event = Event.query.get_or_404(event_id)
     tickets = event.tickets
+    total_booked = sum(order.quantity for order in event.orders)
 
     total_tickets = 0
 
@@ -128,7 +129,11 @@ def book_tickets(event_id):
     for ticket in tickets:
         qty = int(request.form.get(f"ticket_{ticket.id}", 0))
         if qty > 0:
-            total_tickets += qty
+            # Prevent overbooking
+            if event.attendees and (total_booked + qty) > event.attendees:
+                flash(f"Cannot book {qty} tickets. Only {event.attendees - total_booked} left.", "warning")
+                return redirect(url_for("event.event_details", event_id=event.id))
+
             order = Order(
                 user_id=current_user.id,
                 event_id=event.id,
@@ -138,6 +143,8 @@ def book_tickets(event_id):
                 order_date=datetime.utcnow()
             )
             db.session.add(order)
+            total_tickets += qty
+            total_booked += qty
 
     if total_tickets == 0:
         flash("Please select at least one ticket to book.", "warning")
@@ -145,8 +152,13 @@ def book_tickets(event_id):
 
     try: 
         db.session.commit()
-        flash("Tickets booked successfully!", "success")
-    except Exception as e:
+        if event.attendees and total_booked >= event.attendees:
+            event.status = EventStatus.SOLD_OUT
+            db.session.commit()
+            flash("Tickets booked successfully! Event is now SOLD OUT.", "success")
+        else:
+            flash("Tickets booked successfully!", "success")
+    except Exception:
         db.session.rollback()
         flash("Failed to book tickets. Please try again.", "danger")
 
