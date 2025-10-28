@@ -7,15 +7,24 @@ from . import db
 from .models import Event
 from werkzeug.utils import secure_filename
 import os
-import datetime
+from datetime import datetime
 
 main_bp = Blueprint('main', __name__)
 
 # Home page
 @main_bp.route('/')
 def index():
-    today = datetime.datetime.now().date()
+    today = datetime.now().date()
 
+
+
+    # Mark past events as INACTIVE
+    past_events = Event.query.filter(Event.event_date < today, Event.status != EventStatus.INACTIVE).all()
+    for event in past_events:
+        event.status = EventStatus.INACTIVE
+    if past_events:
+        db.session.commit()
+    
     trending_events = (
         Event.query.filter(Event.event_date >= today)
         .order_by(Event.event_date.asc())
@@ -24,10 +33,15 @@ def index():
     )
 
     upcoming_events = (
-        Event.query.filter(Event.event_date >= today)
+        Event.query.filter(Event.event_date >= today, Event.status != EventStatus.INACTIVE)
         .order_by(Event.event_date.asc())
         .offset(6)
         .limit(6)
+        .all()
+    )
+    previous_events = (
+        Event.query.filter(Event.status == EventStatus.INACTIVE)
+        .order_by(Event.event_date.desc())
         .all()
     )
 
@@ -93,7 +107,9 @@ def events():
 def details(event_id):
     event = Event.query.get_or_404(event_id)
     comments = Comment.query.filter_by(event_id=event.id).order_by(Comment.created_at.desc()).all()
-    return render_template("details.html", event=event, comments=comments)
+    user_orders = []
+    tickets = event.tickets
+    return render_template("details.html", event=event, comments=comments, tickets=tickets, user_orders=user_orders, datetime=datetime)
 
 
 ## Update event page

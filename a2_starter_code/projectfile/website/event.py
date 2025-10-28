@@ -110,7 +110,7 @@ def event_details(event_id):
     event = Event.query.get_or_404(event_id)
     tickets = event.tickets
     user_orders = Order.query.filter_by(user_id=current_user.id, event_id=event.id).all()
-    return render_template("details.html", event=event, tickets=tickets, user_orders=user_orders)
+    return render_template("details.html", event=event, tickets=tickets, user_orders=user_orders, datetime=datetime)
 
 # Route for Book Tickets
 @event_bp.route("/book_tickets/<int:event_id>", methods=["POST"])
@@ -121,6 +121,10 @@ def book_tickets(event_id):
 
     total_tickets = 0
 
+    if event.status.name == "INACTIVE" or event.event_date < datetime.now().date():
+        flash("This event is no longer active. Ticket booking is closed.", "warning")
+        return redirect(url_for("event.event_details", event_id=event.id))
+    
     for ticket in tickets:
         qty = int(request.form.get(f"ticket_{ticket.id}", 0))
         if qty > 0:

@@ -88,6 +88,12 @@ class Event(db.Model):
     images = db.relationship(
         "EventImage", back_populates="event", lazy=True, cascade="all, delete-orphan"
     )
+    def check_and_update_status(self):
+        """Automatically set event as INACTIVE if the date has passed."""
+        today = datetime.utcnow().date()
+        if self.event_date < today and self.status != EventStatus.INACTIVE:
+            self.status = EventStatus.INACTIVE
+            db.session.commit()
 
 class EventImage(db.Model):
     __tablename__ = 'event_images'
