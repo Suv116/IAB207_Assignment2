@@ -199,11 +199,6 @@ def upcoming_view():
         Event.event_date >= datetime.now().date()
     ).order_by(Event.event_date.asc()).all()
 
-    print("=== DEBUG ===")
-    print("User Orders:", [(o.id, o.event_id, o.user_id) for o in user_orders])
-    print("Events Returned:", [(e.id, e.title) for e in events])
-    print("================")
-
     return render_template("UpcomingEvent.html", events=events, user_orders=user_orders)
 
 
