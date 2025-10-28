@@ -88,18 +88,25 @@
 </div>
 
             <!-- Booking Section -->
-            <div class="booking">
-                <form method="POST" action="{{ url_for('event.book_tickets', event_id=event.id) }}">
-                    {% for ticket in event.tickets %}
-                    <div class="ticket-option">
-                        <label for="ticket{{ ticket.id }}">
-                            <strong>{{ ticket.ticket_type }} - ${{ '%.2f'|format(ticket.price) }}</strong>
-                        </label>
-                        <input type="number" id="ticket{{ ticket.id }}" name="ticket_{{ ticket.id }}" min="0" max="10" value="0">
+            <div class="booking mt-4">
+                {% if event.status.name != "INACTIVE" and event.event_date >= datetime.now().date() %}
+                    <form method="POST" action="{{ url_for('event.book_tickets', event_id=event.id) }}">
+                        {% for ticket in event.tickets %}
+                            <div class="ticket-option mb-2">
+                                <label for="ticket{{ ticket.id }}">
+                                    <strong>{{ ticket.ticket_type }} - ${{ '%.2f'|format(ticket.price) }}</strong>
+                                </label>
+                                <input type="number" id="ticket{{ ticket.id }}" name="ticket_{{ ticket.id }}" min="0" max="10" value="0" class="form-control w-25 d-inline-block">
+                            </div>
+                        {% endfor %}
+                        <button type="submit" class="btn btn-primary mt-3">Book Now</button>
+                    </form>
+                {% else %}
+                    <div class="alert alert-secondary mt-3">
+                        <strong>Ticket booking is closed.</strong><br>
+                        This event has already occurred or is no longer active.
                     </div>
-                    {% endfor %}
-                    <button type="submit" class="btn btn-primary mt-3">Book Now</button>
-                </form>
+                {% endif %}
             </div>
 
             <hr>
