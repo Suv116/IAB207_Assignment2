@@ -1,4 +1,4 @@
-import enum
+import enum import Enum
 from datetime import datetime
 from flask_login import UserMixin
 from . import db
