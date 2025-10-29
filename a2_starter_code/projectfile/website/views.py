@@ -102,7 +102,7 @@ def details(event_id):
 def update_event():
     user_events = Event.query.filter_by(user_id=current_user.id).all()
 
-    # Get selected event from query string or form
+    
     event_id = request.args.get('event_id') or request.form.get('event_id')
     selected_event = Event.query.filter_by(id=event_id, user_id=current_user.id).first() if event_id else None
 
@@ -188,19 +188,33 @@ def update_event():
         selected_event=selected_event
     )
 
-@main_bp.route('/delete-event/<int:event_id>', methods=['POST'])
+@main_bp.route('/cancel-event/<int:event_id>', methods=['POST'])
 @login_required
-def delete_event(event_id):
+def cancel_event(event_id):
     event = Event.query.filter_by(id=event_id, user_id=current_user.id).first_or_404()
-    
-    # Delete info and images
-    Ticket.query.filter_by(event_id=event.id).delete()
-    EventImage.query.filter_by(event_id=event.id).delete()
-    
-    db.session.delete(event)
+    event.status = EventStatus.CANCELLED
     db.session.commit()
-    flash('Event cancelled successfully.', 'success')
-    return redirect(url_for('main.update_event'))
+    flash('Event cancelled successfully', 'warning')
+    return redirect(url_for('main.update_event', event_id=event.id))
+
+
+@main_bp.route('/uncancel-event/<int:event_id>', methods=['POST'])
+@login_required
+def uncancel_event(event_id):
+    event = Event.query.filter_by(id=event_id, user_id=current_user.id).first_or_404()
+
+    if event.status == EventStatus.CANCELLED:
+        event.status = EventStatus.OPEN
+        db.session.commit()
+        flash('Event has been uncancelled and is now editable.', 'success')
+    else:
+        flash('Event is already open.', 'info')
+
+    return redirect(url_for('main.update_event', event_id=event.id))
+
+
+
+
 
 
 
