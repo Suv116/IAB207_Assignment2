@@ -326,9 +326,7 @@ ul.concertbookingline > li:before {
     margin: 0.5rem 0;
 }
 
-/* =========================
-   Details Page Styling
-   ========================= */
+/*Details Page Styling*/
 
 #details-page .container {
     max-width: 900px;
@@ -524,6 +522,13 @@ ul.concertbookingline > li:before {
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25); /* subtle shadow */
     transition: transform 0.3s, box-shadow 0.3s;
 }
+.genre-card .event-img {
+    height: 180px; /* was 120px — increase as desired */
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+
 
 .genre-card:hover {
     transform: translateY(-5px); /* slight lift on hover */
