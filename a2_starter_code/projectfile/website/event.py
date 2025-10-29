@@ -8,7 +8,9 @@ from werkzeug.utils import secure_filename
 from .models import EventStatus, User, OrganisationType, Genre, Event, Ticket, EventImage, Comment, Order
 from . import db
 from sqlalchemy import cast, Date
+
 event_bp = Blueprint("event", __name__)
+
 
 @event_bp.route("/create-event", methods=["GET", "POST"])
 @login_required
@@ -22,12 +24,10 @@ def create_event():
             start_time = request.form.get("start_time")
             end_time = request.form.get("end_time")
             genre = request.form.get("genre")
-            ticket_type = request.form.get("ticket_type")
-            price = request.form.get("price")
             venue = request.form.get("venue")
             description = request.form.get("description")
 
-            # Convert date and time
+            # Convert date/time
             event_date = datetime.strptime(date, "%Y-%m-%d").date() if date else None
             start_time_obj = datetime.strptime(start_time, "%H:%M").time() if start_time else None
             end_time_obj = datetime.strptime(end_time, "%H:%M").time() if end_time else None
@@ -46,29 +46,37 @@ def create_event():
                 user_id=current_user.id,
             )
 
+            # Handle main image
             photo_file = request.files.get("photo")
             if photo_file:
                 filename = secure_filename(photo_file.filename)
                 photo_file.save(os.path.join(current_app.config["UPLOAD_FOLDER"], filename))
                 event.photo = filename
-            db.session.add(event)
-            db.session.flush()
 
+            db.session.add(event)
+            db.session.flush()  # get event.id
+
+            # Handle carousel images
             carousel_files = request.files.getlist("carousel_images")
             for f in carousel_files:
-                if f:
+                if f and f.filename:
                     filename = secure_filename(f.filename)
                     f.save(os.path.join(current_app.config["UPLOAD_FOLDER"], filename))
                     img = EventImage(event_id=event.id, filename=filename)
                     db.session.add(img)
 
-            if ticket_type and price:
-                ticket = Ticket(
-                    ticket_type=ticket_type,
-                    price=float(price),
-                    event_id=event.id
-                )
-                db.session.add(ticket)
+            # ✅ Handle multiple tickets
+            ticket_types = request.form.getlist("ticket_type[]")
+            prices = request.form.getlist("price[]")
+
+            for t_type, price in zip(ticket_types, prices):
+                if t_type.strip() and price.strip():
+                    ticket = Ticket(
+                        ticket_type=t_type.strip(),
+                        price=float(price),
+                        event_id=event.id
+                    )
+                    db.session.add(ticket)
 
             db.session.commit()
             flash("Concert created successfully!", "success")
@@ -79,6 +87,7 @@ def create_event():
             flash("Error creating event. Please check your information and try again.", "danger")
 
     return render_template("createEvent.html")
+
 
 @event_bp.route("/event/<int:event_id>/comment", methods=["POST"])
 @login_required
@@ -103,7 +112,9 @@ def add_comment(event_id):
 
     flash("Comment added successfully!", "success")
     return redirect(url_for("main.details", event_id=event.id))
-# Route for Event Details 
+
+
+# Route for Event Details
 @event_bp.route("/event/<int:event_id>", endpoint="event_details")
 @login_required
 def event_details(event_id):
@@ -112,20 +123,23 @@ def event_details(event_id):
     user_orders = Order.query.filter_by(user_id=current_user.id, event_id=event.id).all()
     return render_template("details.html", event=event, tickets=tickets, user_orders=user_orders, datetime=datetime)
 
+
 # Route for Book Tickets
 @event_bp.route("/book_tickets/<int:event_id>", methods=["POST"])
 @login_required
 def book_tickets(event_id):
     event = Event.query.get_or_404(event_id)
     tickets = event.tickets
+
+    # Calculate total currently booked for the event
     total_booked = sum(order.quantity for order in event.orders)
+    total_tickets_added = 0
 
-    total_tickets = 0
-
+    # Check if event is still active
     if event.status.name == "INACTIVE" or event.event_date < datetime.now().date():
         flash("This event is no longer active. Ticket booking is closed.", "warning")
         return redirect(url_for("event.event_details", event_id=event.id))
-    
+
     for ticket in tickets:
         qty = int(request.form.get(f"ticket_{ticket.id}", 0))
         if qty > 0:
@@ -134,35 +148,55 @@ def book_tickets(event_id):
                 flash(f"Cannot book {qty} tickets. Only {event.attendees - total_booked} left.", "warning")
                 return redirect(url_for("event.event_details", event_id=event.id))
 
-            order = Order(
+            # ✅ Check if user already booked this ticket type
+            existing_order = Order.query.filter_by(
                 user_id=current_user.id,
                 event_id=event.id,
-                ticket_id=ticket.id,
-                quantity=qty,
-                price=ticket.price * qty,
-                order_date=datetime.utcnow()
-            )
-            db.session.add(order)
-            total_tickets += qty
+                ticket_id=ticket.id
+            ).first()
+
+            if existing_order:
+                # Update existing order quantity and price
+                existing_order.quantity += qty
+                existing_order.price += ticket.price * qty
+            else:
+                # Create a new order
+                new_order = Order(
+                    user_id=current_user.id,
+                    event_id=event.id,
+                    ticket_id=ticket.id,
+                    quantity=qty,
+                    price=ticket.price * qty,
+                    order_date=datetime.utcnow()
+                )
+                db.session.add(new_order)
+
+            total_tickets_added += qty
             total_booked += qty
 
-    if total_tickets == 0:
+    # If user didn’t select any tickets
+    if total_tickets_added == 0:
         flash("Please select at least one ticket to book.", "warning")
         return redirect(url_for("event.event_details", event_id=event.id))
 
-    try: 
-        db.session.commit()
+    try:
+        # Mark event as sold out if capacity reached
         if event.attendees and total_booked >= event.attendees:
             event.status = EventStatus.SOLD_OUT
-            db.session.commit()
+
+        db.session.commit()
+
+        if event.status == EventStatus.SOLD_OUT:
             flash("Tickets booked successfully! Event is now SOLD OUT.", "success")
         else:
             flash("Tickets booked successfully!", "success")
-    except Exception:
+
+    except Exception as e:
         db.session.rollback()
         flash("Failed to book tickets. Please try again.", "danger")
 
     return redirect(url_for("event.event_details", event_id=event.id))
+
 
 # Cancel order 
 @event_bp.route("/cancel_order/<int:order_id>", methods=["POST"])
@@ -175,16 +209,36 @@ def cancel_order(order_id):
     if order.user_id != current_user.id:
         flash("You are not authorized to cancel this order.", "danger")
         return redirect(url_for("event.upcoming_view"))
+
+    # Get the quantity to cancel from the form
+    try:
+        cancel_qty = int(request.form.get("cancel_qty", 0))
+    except ValueError:
+        flash("Invalid quantity entered.", "danger")
+        return redirect(url_for("event.upcoming"))
+
+    if cancel_qty < 1 or cancel_qty > order.quantity:
+        flash(f"Please enter a quantity between 1 and {order.quantity}.", "warning")
+        return redirect(url_for("event.upcoming"))
+
     event_title = order.event.title
     ticket_type = order.ticket.ticket_type
 
-    
-    # Delete the order
-    db.session.delete(order)
-    db.session.commit()
+    if cancel_qty == order.quantity:
+        # Cancel entire order
+        db.session.delete(order)
+        flash(f"Your booking for {event_title} ({ticket_type}) has been fully cancelled.", "success")
+    else:
+        # Partial cancellation
+        order.quantity -= cancel_qty
+        order.price = order.ticket.price * order.quantity  # update price
+        flash(f"You have cancelled {cancel_qty} ticket(s) for {event_title} ({ticket_type}).", "success")
 
-    flash(f"Your booking for {order.event.title} ({order.ticket.ticket_type}) has been cancelled.", "success")
+    db.session.commit()
     return redirect(url_for("event.upcoming"))
+
+
+
 # Upcoming Events Route
 @event_bp.route("/upcoming-event", endpoint="upcoming")
 @login_required
@@ -214,7 +268,7 @@ def history_view():
 
     # Query those events
     events = Event.query.filter(Event.id.in_(past_event_ids)).order_by(Event.event_date.desc()).all()
-    
+
     return render_template("history.html", events=events, active_tab="past")
 
     # test

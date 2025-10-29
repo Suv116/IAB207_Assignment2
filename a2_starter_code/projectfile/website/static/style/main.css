@@ -111,12 +111,22 @@ h6.card-title {
     font-size: 0.85rem;
 }
 
+
 .section-img {
     max-height: 600px;
     width: 100%;
     object-fit: cover;
     object-position: 90% 10%;
     border-radius: 0.5rem;
+    border: 4px solid #e0d8c0; /* stylistic border color */
+    border-radius: 12px; /* rounded corners */
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3); /* subtle shadow */
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.section-img:hover {
+    transform: translateY(-5px); /* slight lift on hover */
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4); /* deeper shadow */
 }
 
 .minisection-img {
@@ -156,6 +166,7 @@ h6.card-title {
     font-family: 'Bebas Neue', sans-serif;
     letter-spacing: 1px;
 }
+
 .login-section {
     font-family: 'Oswald', sans-serif;
     letter-spacing: 1px;
@@ -169,6 +180,14 @@ h6.card-title {
 .concert-section {
     font-family: 'Bebas Neue', sans-serif;
     letter-spacing: 1px;
+}
+
+form input,
+form select,
+form textarea {
+    font-family: 'Oswald', sans-serif;
+    font-size: 1rem;
+    color: #2d2d2a;
 }
 
 .section-header {
@@ -307,18 +326,20 @@ ul.concertbookingline > li:before {
 /* Title */
 #details-page h1 {
     font-family: 'Bebas Neue', sans-serif;
-    font-size: 2.5rem;
-    letter-spacing: 1px;
+    font-size: 3.2rem; /* larger for stronger visual impact */
+    letter-spacing: 1.5px;
     color: #2d2d2a;
-    margin-bottom: 0.5rem;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    text-align: center; /* optional, but makes it look cleaner */
 }
 
 /* Event Info */
 #details-page .event-info {
-    font-size: 1rem;
-    line-height: 1.6;
-    margin-bottom: 1.5rem;
-    color: #3a3a3a;
+    font-size: 1.15rem; /* slightly larger for better readability */
+    line-height: 1.8;
+    margin-bottom: 2rem;
+    color: #2f2f2f;
 }
 
 /* Booking Section */
@@ -341,6 +362,7 @@ ul.concertbookingline > li:before {
 #details-page .booking .ticket-option {
     margin-bottom: 15px;
 }
+
 
 #details-page .booking input,
 #details-page .booking select,
@@ -411,6 +433,7 @@ ul.concertbookingline > li:before {
     font-family: 'Oswald', sans-serif;
     font-size: 0.9rem;
 }
+
 #details-page .add-comment h3 {
     font-family: 'Oswald', sans-serif;
 }
@@ -437,7 +460,7 @@ ul.concertbookingline > li:before {
 .event-card {
     background-color: #e5dcc5;
     border: 4px solid #e0d8c0; /* stylistic border */
-    border-radius: 12px;        /* rounded corners */
+    border-radius: 12px; /* rounded corners */
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25); /* subtle shadow */
     justify-content: flex-start;
     transition: transform 0.3s, box-shadow 0.3s;
@@ -479,7 +502,7 @@ ul.concertbookingline > li:before {
 .genre-card {
     background-color: #e5dcc5;
     border: 4px solid #e0d8c0; /* stylistic border */
-    border-radius: 12px;        /* rounded corners */
+    border-radius: 12px; /* rounded corners */
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25); /* subtle shadow */
     transition: transform 0.3s, box-shadow 0.3s;
 }
@@ -612,7 +635,7 @@ ul.concertbookingline > li:before {
 .event-card-wrapper {
     background: #e5dcc5;
     border-radius: 12px;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
     padding: 20px;
     transition: all 0.3s ease;
     margin: 30px 0;
@@ -620,7 +643,7 @@ ul.concertbookingline > li:before {
 
 .event-card-wrapper:hover {
     transform: translateY(-5px);
-    box-shadow: 0 10px 25px rgba(0,0,0,0.35);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
 }
 
 .event-image img {
@@ -628,7 +651,7 @@ ul.concertbookingline > li:before {
     height: 130px;
     border-radius: 10px;
     object-fit: cover;
-    box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
 }
 
 .event-info {
