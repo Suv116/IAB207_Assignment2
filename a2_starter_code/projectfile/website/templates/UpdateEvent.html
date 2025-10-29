@@ -8,7 +8,7 @@
                 <div class="col-md-8 mx-auto">
                     <div class="card" style="border-radius: 15px;">
                         <div class="card-body p-5">
-                            <h2 class="text-center mb-5">Edit Your Event</h2>
+                            <h2 class="text-center mb-5" style="font-family: 'Oswald', sans-serif;">Edit Your Event</h2>
 
                             <form method="POST" enctype="multipart/form-data">
                                 <!-- Event Selection -->
@@ -23,66 +23,69 @@
                                             </option>
                                         {% endfor %}
                                     </select>
-
                                 </div>
 
+                                {% if selected_event %}
                                 <!-- Event Name -->
                                 <div class="section-header">Event Name</div>
                                 <div class="form-outline mb-4">
                                     <input type="text" class="form-control form-control-lg" name="title"
-                                           value="{{ selected_event.title if selected_event else '' }}"/>
+                                           value="{{ selected_event.title }}"/>
                                 </div>
 
                                 <!-- Description -->
                                 <div class="section-header">Description</div>
                                 <div class="form-outline mb-4">
-                                    <textarea class="form-control form-control-lg" name="description" rows="3">{{ selected_event.description if selected_event else '' }}</textarea>
+                                    <textarea class="form-control form-control-lg" name="description" rows="3">{{ selected_event.description }}</textarea>
                                 </div>
 
                                 <!-- Date -->
                                 <div class="section-header">Date</div>
                                 <div class="form-outline mb-4">
                                     <input type="date" class="form-control form-control-lg" name="event_date"
-                                           value="{{ selected_event.event_date if selected_event else '' }}"/>
+                                           value="{{ selected_event.event_date.strftime('%Y-%m-%d') }}"/>
                                 </div>
 
-                                <!-- Start Time -->
-                                <div class="section-header">Start Time</div>
-                                <div class="form-outline mb-4">
-                                    <input type="time" class="form-control form-control-lg" name="start_time"
-                                           value="{{ selected_event.start_time if selected_event else '' }}"/>
-                                </div>
-
-                                <!-- End Time -->
-                                <div class="section-header">End Time</div>
-                                <div class="form-outline mb-4">
-                                    <input type="time" class="form-control form-control-lg" name="end_time"
-                                           value="{{ selected_event.end_time if selected_event else '' }}"/>
+                                <!-- Times -->
+                                <div class="section-header">Event Times</div>
+                                <div class="row mb-4">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Start Time</label>
+                                        <input type="time" class="form-control form-control-lg" name="start_time"
+                                               value="{{ selected_event.start_time.strftime('%H:%M') }}"/>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">End Time</label>
+                                        <input type="time" class="form-control form-control-lg" name="end_time"
+                                               value="{{ selected_event.end_time.strftime('%H:%M') }}"/>
+                                    </div>
                                 </div>
 
                                 <!-- Venue -->
                                 <div class="section-header">Venue</div>
                                 <div class="form-outline mb-4">
                                     <input type="text" class="form-control form-control-lg" name="venue"
-                                           value="{{ selected_event.venue if selected_event else '' }}"/>
+                                           value="{{ selected_event.venue }}"/>
                                 </div>
 
-                                <!-- Ticket Type -->
-                                <div class="section-header">Ticket Type</div>
-                                <div class="form-outline mb-4">
-                                    <input type="text" class="form-control form-control-lg" name="ticket_type"
-                                        placeholder="Ticket type (e.g. General Admission)"
-                                        value="{{ ticket_type if ticket_type is not none else '' }}"/>
+                                <!-- Tickets -->
+                                <div class="section-header">Tickets</div>
+                                <div id="ticket-container">
+                                    {% for ticket in selected_event.tickets %}
+                                    <div class="mb-3 ticket-row">
+                                        <div class="input-group">
+                                            <input type="text" name="ticket_type[]" class="form-control"
+                                                   placeholder="Ticket Type" value="{{ ticket.ticket_type }}">
+                                            <input type="number" step="0.01" name="ticket_price[]" class="form-control"
+                                                   placeholder="Price $" value="{{ ticket.price }}">
+                                            <button type="button" class="btn btn-danger remove-ticket-btn">Remove</button>
+                                        </div>
+                                    </div>
+                                    {% endfor %}
                                 </div>
+                                <button type="button" id="add-ticket-btn" class="btn btn-outline-primary btn-sm mb-4">Add Ticket</button>
 
-                                <!-- Ticket Price -->
-                                <div class="section-header">Ticket Price</div>
-                                <div class="form-outline mb-4">
-                                    <input type="number" step="0.01" class="form-control form-control-lg" name="ticket_price"
-                                        placeholder="Ticket price ($)" value="{{ ticket_price if ticket_price is not none else '' }}"/>
-                                </div>
-
-                                <!-- Genres -->
+                                <!-- Genre -->
                                 <div class="section-header">Genre</div>
                                 <div class="form-outline mb-4">
                                     <select class="form-control form-control-lg" name="genre">
@@ -90,43 +93,38 @@
                                         {% set genres = ['grunge', 'metal', 'tribute', 'classic', '70s', '80s', '90s', '00s', 'southern', 'psychedelic'] %}
                                         {% for genre in genres %}
                                             <option value="{{ genre }}"
-                                                {% if selected_event and selected_event.genre and selected_event.genre.value == genre %}selected{% endif %}>
+                                                {% if selected_event.genre and selected_event.genre.value == genre %}selected{% endif %}>
                                                 {{ genre|capitalize }}
                                             </option>
                                         {% endfor %}
                                     </select>
                                 </div>
 
-                                <!-- Main Image -->
+                                <!-- Images -->
                                 <div class="section-header">Main Image</div>
                                 <input type="file" name="photo" class="form-control form-control-lg"/>
                                 <small class="text-muted">Leave empty to keep current main image</small>
 
-                                <!-- Carousel Images -->
                                 <div class="section-header">Carousel Images</div>
                                 <input type="file" name="carousel_images" class="form-control form-control-lg" multiple/>
                                 <small class="text-muted">Leave empty to keep current carousel images</small>
 
-                                <!-- Important Note -->
                                 <p class="text-muted text-center mb-4">
                                     Event status cannot be changed manually. The system will update it automatically.
                                 </p>
 
-                                <!-- Submit -->
                                 <div class="d-flex justify-content-center">
-                                    <button type="submit"
-                                            class="btn btn-success btn-block btn-lg gradient-custom-4 text-body">
+                                    <button type="submit" class="btn btn-success btn-block btn-lg gradient-custom-4 text-body">
                                         Save Changes
                                     </button>
                                 </div>
+                                {% endif %}
                             </form>
 
-
-                            <!-- Cancel Event -->
                             {% if selected_event %}
                             <form method="POST" action="{{ url_for('main.delete_event', event_id=selected_event.id) }}">
                                 <button type="submit"
-                                        class="btn btn-danger btn-block btn-lg text-body"
+                                        class="btn btn-danger btn-block btn-lg text-body mt-3"
                                         onclick="return confirm('Are you sure you want to cancel this event?');">
                                     Cancel This Event
                                 </button>
@@ -141,4 +139,31 @@
     </div>
 </div>
 
+<script>
+    // Add new ticket row
+    document.getElementById('add-ticket-btn').addEventListener('click', function () {
+        const container = document.getElementById('ticket-container');
+        const row = document.createElement('div');
+        row.classList.add('mb-3', 'ticket-row');
+        row.innerHTML = `
+            <div class="input-group">
+                <input type="text" name="ticket_type[]" class="form-control" placeholder="Ticket Type">
+                <input type="number" step="0.01" name="ticket_price[]" class="form-control" placeholder="Price $">
+                <button type="button" class="btn btn-danger remove-ticket-btn">Remove</button>
+            </div>
+        `;
+        container.appendChild(row);
+
+        row.querySelector('.remove-ticket-btn').addEventListener('click', function() {
+            row.remove();
+        });
+    });
+
+    // Remove ticket row
+    document.querySelectorAll('.remove-ticket-btn').forEach(btn => {
+        btn.addEventListener('click', function () {
+            btn.closest('.ticket-row').remove();
+        });
+    });
+</script>
 {% endblock %}

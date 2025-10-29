@@ -3,14 +3,14 @@
 {% block content %}
 <!-- Flash messages -->
 {% with messages = get_flashed_messages(with_categories=true) %}
-  {% if messages %}
-    {% for category, message in messages %}
-      <div class="alert alert-{{ category }} alert-dismissible fade show mt-3" role="alert">
-        {{ message }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-      </div>
-    {% endfor %}
-  {% endif %}
+{% if messages %}
+{% for category, message in messages %}
+<div class="alert alert-{{ category }} alert-dismissible fade show mt-3" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endfor %}
+{% endif %}
 {% endwith %}
 <div id="details-page">
     <div class="container mt-5">
@@ -20,100 +20,126 @@
             <h1>{{ event.title }}</h1>
 
             <!-- The slideshow/carousel -->
-<div id="demo" class="carousel slide" data-bs-ride="carousel">
+            <div id="demo" class="carousel slide" data-bs-ride="carousel">
 
-    <!-- Indicators -->
-    <div class="carousel-indicators">
-        {% for img in event.images %}
-        <button type="button" data-bs-target="#demo" data-bs-slide-to="{{ loop.index0 }}"
-                class="{% if loop.first %}active{% endif %}"
-                aria-current="{% if loop.first %}true{% endif %}"
-                aria-label="Slide {{ loop.index }}">
-        </button>
-        {% endfor %}
-    </div>
+                <!-- Indicators -->
+                <div class="carousel-indicators">
+                    {% for img in event.images %}
+                    <button type="button" data-bs-target="#demo" data-bs-slide-to="{{ loop.index0 }}"
+                            class="{% if loop.first %}active{% endif %}"
+                            aria-current="{% if loop.first %}true{% endif %}"
+                            aria-label="Slide {{ loop.index }}">
+                    </button>
+                    {% endfor %}
+                </div>
 
-    <!-- Slides -->
-    <div class="carousel-inner">
-        {% for img in event.images %}
-        <div class="carousel-item {% if loop.first %}active{% endif %}">
-            <img src="{{ url_for('static', filename='uploads/' ~img.filename) }}"
-                 class="d-block w-100 carousel-img">
-        </div>
-        {% endfor %}
-    </div>
+                <!-- Slides -->
+                <div class="carousel-inner">
+                    {% for img in event.images %}
+                    <div class="carousel-item {% if loop.first %}active{% endif %}">
+                        <img src="{{ url_for('static', filename='uploads/' ~img.filename) }}"
+                             class="d-block w-100 carousel-img">
+                    </div>
+                    {% endfor %}
+                </div>
 
-    <!-- Controls -->
-    <button class="carousel-control-prev" type="button" data-bs-target="#demo" data-bs-slide="prev">
-        <span class="carousel-control-prev-icon"></span>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#demo" data-bs-slide="next">
-        <span class="carousel-control-next-icon"></span>
-    </button>
-</div>
+                <!-- Controls -->
+                <button class="carousel-control-prev" type="button" data-bs-target="#demo" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon"></span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#demo" data-bs-slide="next">
+                    <span class="carousel-control-next-icon"></span>
+                </button>
+            </div>
 
             <br>
 
             <!-- Event Info -->
             <div class="event-info">
-    <p><strong>Date:</strong><br>
-        {{ event.event_date.strftime('%A, %b %d, %Y') }}
-    </p>
+                <p><strong>Date:</strong><br>
+                    {{ event.event_date.strftime('%A, %b %d, %Y') }}
+                </p>
 
-    <p><strong>Time:</strong><br>
-        {{ event.start_time.strftime('%I:%M %p') }} – {{ event.end_time.strftime('%I:%M %p') }}
-    </p>
+                <p><strong>Time:</strong><br>
+                    {{ event.start_time.strftime('%I:%M %p') }} – {{ event.end_time.strftime('%I:%M %p') }}
+                </p>
 
-    <p><strong>Venue:</strong><br>
-        {{ event.venue }}
-    </p>
+                <p><strong>Venue:</strong><br>
+                    {{ event.venue }}
+                </p>
 
-    <p><strong>Status:</strong><br>
-        {{ event.status.value|capitalize }}
-    </p>
-    <p><strong>Tickets Left:</strong>
-        {% set total_booked = event.orders|sum(attribute='quantity') %}
-        {% if event.attendees %}
-            {{ event.attendees - total_booked }}
-        {% else %}
-            N/A
-        {% endif %}
-    </p>
+                <p><strong>Status:</strong><br>
+                    {{ event.status.value|capitalize }}
+                </p>
+                <p><strong>Tickets Left:</strong>
+                    {% set total_booked = event.orders|sum(attribute='quantity') %}
+                    {% if event.attendees %}
+                    {{ event.attendees - total_booked }}
+                    {% else %}
+                    N/A
+                    {% endif %}
+                </p>
 
-    <p><strong>Genre:</strong><br>
-        {{ event.genre.value|capitalize }}
-    </p>
+                <p><strong>Genre:</strong><br>
+                    {{ event.genre.value|capitalize }}
+                </p>
 
-    <p><strong>Prices:</strong><br>
-        {% for ticket in event.tickets %}
-        {{ ticket.ticket_type }} - ${{ '%.2f'|format(ticket.price) }}<br>
-        {% endfor %}
-    </p>
+                <p><strong>Prices:</strong><br>
+                    {% for ticket in event.tickets %}
+                    {{ ticket.ticket_type }} - ${{ '%.2f'|format(ticket.price) }}<br>
+                    {% endfor %}
+                </p>
 
-    <p><strong>Description:</strong><br>
-        {{ event.description }}
-    </p>
-</div>
+                <p><strong>Description:</strong><br>
+                    {{ event.description }}
+                </p>
+            </div>
 
             <!-- Booking Section -->
-            <div class="booking mt-4">
+            <div class="booking mt-5">
+                <h3 class="mb-4">🎟️ Book Tickets</h3>
                 {% if event.status.name != "INACTIVE" and event.event_date >= datetime.now().date() %}
-                    <form method="POST" action="{{ url_for('event.book_tickets', event_id=event.id) }}">
+                <form method="POST" action="{{ url_for('event.book_tickets', event_id=event.id) }}">
+                    <div class="card shadow-sm p-4 mb-4">
+                        <div class="row fw-semibold border-bottom pb-2 mb-3">
+                            <div class="col-md-6">Ticket Type</div>
+                            <div class="col-md-3 text-center">Price</div>
+                            <div class="col-md-3 text-center">Quantity</div>
+                        </div>
+
                         {% for ticket in event.tickets %}
-                            <div class="ticket-option mb-2">
-                                <label for="ticket{{ ticket.id }}">
-                                    <strong>{{ ticket.ticket_type }} - ${{ '%.2f'|format(ticket.price) }}</strong>
-                                </label>
-                                <input type="number" id="ticket{{ ticket.id }}" name="ticket_{{ ticket.id }}" min="0" max="10" value="0" class="form-control w-25 d-inline-block">
+                        <div class="row align-items-center mb-3">
+                            <div class="col-md-6">
+                                <span class="fs-6">{{ ticket.ticket_type }}</span>
                             </div>
+                            <div class="col-md-3 text-center">
+                                <span class="text-success fw-bold">${{ '%.2f'|format(ticket.price) }}</span>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <input
+                                        type="number"
+                                        id="ticket{{ ticket.id }}"
+                                        name="ticket_{{ ticket.id }}"
+                                        min="0" max="10"
+                                        value="0"
+                                        class="form-control text-center mx-auto w-75"
+                                >
+                            </div>
+                        </div>
                         {% endfor %}
-                        <button type="submit" class="btn btn-primary mt-3">Book Now</button>
-                    </form>
-                {% else %}
-                    <div class="alert alert-secondary mt-3">
-                        <strong>Ticket booking is closed.</strong><br>
-                        This event has already occurred or is no longer active.
                     </div>
+
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary px-5 py-2 fs-6">
+                            Book Now
+                        </button>
+                    </div>
+                </form>
+                {% else %}
+                <div class="alert alert-secondary mt-3 text-center">
+                    <strong>Ticket booking is closed.</strong><br>
+                    This event has already occurred or is no longer active.
+                </div>
                 {% endif %}
             </div>
 
@@ -129,7 +155,7 @@
                     <strong>{{ comment.user.username }}:</strong> {{ comment.content }}
                 </div>
                 {% else %}
-                    <p>No comments yet. Be the first to comment!</p>
+                <p>No comments yet. Be the first to comment!</p>
                 {% endfor %}
 
                 <hr>
