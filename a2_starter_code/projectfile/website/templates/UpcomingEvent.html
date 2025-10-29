@@ -3,151 +3,120 @@
 {% block content %}
 {% with messages = get_flashed_messages(with_categories=true) %}
 {% if messages %}
-    {% for category, message in messages %}
-    <div class="alert alert-{{ category }} alert-dismissible fade show mt-3" role="alert"
-         style="font-family: 'Oswald', sans-serif;">
-        {{ message }}
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
-    {% endfor %}
+  {% for category, message in messages %}
+  <div class="alert alert-{{ category }} alert-dismissible fade show mt-3" role="alert" style="font-family: 'Oswald', sans-serif;">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  {% endfor %}
 {% endif %}
 {% endwith %}
 
 <div class="container mt-5">
-    <div class="text-center mb-4">
-        <h2 class="mb-4" style="font-family: 'Oswald', sans-serif;">My Upcoming Bookings</h2>
-
-        <div class="d-inline-flex p-3" style="border-radius:8px;">
-            <a href="{{ url_for('event.history_view') }}" class="btn btn-outline-dark btn-sm me-2"
-               style="color: white; font-family: 'Oswald', sans-serif;">Past Bookings</a>
-            <button class="btn btn-dark btn-sm" style="color: white; font-family: 'Oswald', sans-serif;">Upcoming
-                Bookings
-            </button>
-        </div>
+  <div class="text-center mb-4">
+    <h2 class="mb-4">My Upcoming Bookings</h2>
+    <div class="d-inline-flex p-3" style="border-radius:8px;">
+      <a href="{{ url_for('event.history_view') }}" class="btn btn-outline-dark btn-sm me-2" style="color: white; font-family: 'Oswald', sans-serif;">Past Bookings</a>
+      <button class="btn btn-dark btn-sm" style="color: white; font-family: 'Oswald', sans-serif;">Upcoming Bookings</button>
     </div>
+  </div>
 
-    <hr class="section-divider">
+  <hr class="section-divider">
 
-    <div class="container mt-5 mb-5">
-        <div class="row">
-            <div class="col-md-6 offset-md-3">
-                <ul class="concertbookingline">
-                    {% for event in events %}
-                        {% set event_orders = user_orders | selectattr("event_id", "equalto", event.id) | list %}
-                        {% if event_orders %}
-                            {% for order in event_orders %}
-                            <li class="event-card-item mb-3">
-                                <div class="event-card-wrapper d-flex align-items-center p-3 shadow-sm rounded">
+  <div class="container mt-5 mb-5">
+    <div class="row">
+      <div class="col-md-6 offset-md-3">
+        <ul class="concertbookingline">
+          {% for event in events %}
+          {% set event_orders = user_orders | selectattr("event_id", "equalto", event.id) | list %}
+          {% if event_orders %}
+            {% for order in event_orders %}
+            <li class="event-card-item mb-3">
+              <div class="event-card-wrapper d-flex align-items-center p-3 shadow-sm rounded">
 
-                                    <!-- Left: Image -->
-                                    <div class="event-image me-3">
-                                        {% if event.photo %}
-                                        <img src="{{ url_for('static', filename='uploads/' ~ event.photo) }}"
-                                             alt="{{ event.title }}" class="img-fluid rounded">
-                                        {% else %}
-                                        <img src="{{ url_for('static', filename='default_event.jpg') }}"
-                                             alt="Default event image" class="img-fluid rounded">
-                                        {% endif %}
-                                    </div>
+                <div class="event-image me-3">
+                  {% if event.photo %}
+                  <img src="{{ url_for('static', filename='uploads/' ~ event.photo) }}" alt="{{ event.title }}" class="img-fluid rounded">
+                  {% else %}
+                  <img src="{{ url_for('static', filename='default_event.jpg') }}" alt="Default event image" class="img-fluid rounded">
+                  {% endif %}
+                </div>
 
-                                    <!-- Right: Info -->
-                                    <div class="event-info flex-grow-1">
-                                        <div class="d-flex justify-content-between align-items-start">
-                                            <h4 class="event-title mb-1">
-                                                <a href="{{ url_for('main.details', event_id=event.id) }}">{{ event.title }}</a>
-                                            </h4>
-                                            <span class="status-badge">{{ event.status.value|capitalize }}</span>
-                                        </div>
-                                        <p class="event-meta mb-1">{{ event.event_date.strftime('%A · %b %d, %Y') }} · {{
-                                            event.venue }}</p>
-                                        <p class="event-genre mb-1">Genre: {{ event.genre.name if event.genre else 'N/A' }}</p>
-                                        <p class="event-order mb-2">Ticket Order #: {{ order.id }}</p>
+                <div class="event-info flex-grow-1">
+                  <div class="d-flex justify-content-between align-items-start">
+                    <h4 class="event-title mb-1"><a href="{{ url_for('main.details', event_id=event.id) }}">{{ event.title }}</a></h4>
+                    <span class="status-badge">{{ event.status.value|capitalize }}</span>
+                  </div>
+                  <p class="event-meta mb-1">{{ event.event_date.strftime('%A · %b %d, %Y') }} · {{ event.venue }}</p>
+                  <p class="event-genre mb-1">Genre: {{ event.genre.name if event.genre else 'N/A' }}</p>
+                  <p class="event-order mb-2">Ticket Order #: {{ order.id }}</p>
 
-                                        <div class="event-ticket mb-2">
-                                            {% if order.status == 'CANCELLED' or order.ticket.status == 'CANCELLED' %}
-                                                <strong>Ticket:</strong> {{ order.ticket.ticket_type }} × {{ order.quantity }}
-                                                — <span class="badge bg-danger">Cancelled</span>
-                                            {% else %}
-                                                <strong>Ticket:</strong> {{ order.ticket.ticket_type }} × {{ order.quantity }}
-                                                — ${{ "%.2f"|format(order.price) }}
-                                            {% endif %}
-                                        </div>
+                  <div class="event-ticket mb-2">
+                    <strong>Ticket:</strong> {{ order.ticket.ticket_type }} × {{ order.quantity }} — ${{ "%.2f"|format(order.price) }}
+                  </div>
 
-                                        <div class="booking-buttons mt-3">
-                                            <a href="{{ url_for('main.details', event_id=event.id) }}"
-                                               class="btn btn-sm btn-outline-dark me-2">View Event</a>
-
-                                            {% if order.status != 'CANCELLED' and order.ticket.status != 'CANCELLED' %}
-                                            <!-- Cancel Button triggers single Modal -->
-                                            <button type="button" class="btn btn-sm btn-danger"
-                                                    data-bs-toggle="modal"
-                                                    data-bs-target="#cancelModal"
-                                                    data-order-id="{{ order.id }}"
-                                                    data-max="{{ order.quantity }}"
-                                                    data-event-name="{{ event.title }}">
-                                                Cancel
-                                            </button>
-                                            {% endif %}
-                                        </div>
-                                    </div>
-                                </div>
-                            </li>
-                            {% endfor %}
-                        {% endif %}
-                    {% else %}
-                        <p class="text-center mt-5" style="font-family: 'Oswald', sans-serif;">You don’t have any upcoming bookings yet.</p>
-                    {% endfor %}
-                </ul>
-            </div>
-        </div>
+                  <div class="booking-buttons mt-3">
+                    <a href="{{ url_for('main.details', event_id=event.id) }}" class="btn btn-sm btn-outline-dark me-2">View Event</a>
+                    <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#cancelModal" data-order-id="{{ order.id }}" data-max="{{ order.quantity }}" data-event-name="{{ event.title }}">
+                      Cancel
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </li>
+            {% endfor %}
+          {% endif %}
+          {% else %}
+            <p class="text-center mt-5" style="font-family: 'Oswald', sans-serif;">You don’t have any upcoming bookings yet.</p>
+          {% endfor %}
+        </ul>
+      </div>
     </div>
+  </div>
 </div>
 
 <!-- Single Cancel Modal -->
 <div class="modal fade" id="cancelModal" tabindex="-1" aria-labelledby="cancelModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content shadow-lg rounded" style="font-family: 'Oswald', sans-serif; background-color: #343a40; color: #fff;">
-            <div class="modal-header border-0">
-                <h5 class="modal-title" id="cancelModalLabel">Cancel Tickets</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body text-start">
-                <p class="mb-2" id="modalEventText" style="font-weight: 500;"></p>
-                <p class="mb-3">Select the number of tickets you wish to cancel. This action will remove them from your booking.</p>
-                <form method="POST" id="cancelForm">
-                    <div class="input-group mb-3" style="max-width: 120px;">
-                        <input type="number" name="cancel_qty" min="1" value="1" class="form-control text-start" id="cancelQtyInput">
-                    </div>
-                    <div class="d-flex justify-content-start gap-2">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-danger">Confirm Cancel</button>
-                    </div>
-                </form>
-            </div>
-        </div>
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content shadow-lg rounded" style="font-family: 'Oswald', sans-serif; background-color: #343a40; color: #fff;">
+      <div class="modal-header border-0">
+        <h5 class="modal-title" id="cancelModalLabel">Cancel Tickets</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-start">
+        <p class="mb-2" id="modalEventText" style="font-weight: 500;"></p>
+        <p class="mb-3">Select the number of tickets you wish to cancel. This action will remove them from your booking.</p>
+        <form method="POST" id="cancelForm">
+          <div class="input-group mb-3" style="max-width: 120px;">
+            <input type="number" name="cancel_qty" min="1" value="1" class="form-control text-start" id="cancelQtyInput">
+          </div>
+          <div class="d-flex justify-content-start gap-2">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-danger">Confirm Cancel</button>
+          </div>
+        </form>
+      </div>
     </div>
+  </div>
 </div>
 
-<!-- JS to dynamically update modal form -->
 <script>
-    const cancelModal = document.getElementById('cancelModal');
-    cancelModal.addEventListener('show.bs.modal', function (event) {
-        const button = event.relatedTarget;
-        const orderId = button.getAttribute('data-order-id');
-        const maxQty = button.getAttribute('data-max');
-        const eventName = button.getAttribute('data-event-name');
+const cancelModal = document.getElementById('cancelModal');
+cancelModal.addEventListener('show.bs.modal', function (event) {
+    const button = event.relatedTarget;
+    const orderId = button.getAttribute('data-order-id');
+    const maxQty = button.getAttribute('data-max');
+    const eventName = button.getAttribute('data-event-name');
 
-        const form = document.getElementById('cancelForm');
-        form.action = `/cancel_order/${orderId}`;
+    const form = document.getElementById('cancelForm');
+    form.action = `/cancel_order/${orderId}`;
 
-        const qtyInput = document.getElementById('cancelQtyInput');
-        qtyInput.max = maxQty;
-        qtyInput.value = 1;
+    const qtyInput = document.getElementById('cancelQtyInput');
+    qtyInput.max = maxQty;
+    qtyInput.value = 1;
 
-        // Update modal text
-        const modalText = document.getElementById('modalEventText');
-        modalText.textContent = `Cancel order for "${eventName}"`;
-    });
+    const modalText = document.getElementById('modalEventText');
+    modalText.textContent = `Cancel order for "${eventName}"`;
+});
 </script>
-
 {% endblock %}

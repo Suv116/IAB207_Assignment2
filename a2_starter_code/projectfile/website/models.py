@@ -106,24 +106,21 @@ class EventImage(db.Model):
 
 
 # Ticket Model
-from enum import Enum
-
-class TicketStatus(Enum):
-    ACTIVE = "ACTIVE"
-    CANCELLED = "CANCELLED"
-
 class Ticket(db.Model):
     __tablename__ = 'tickets'
+
     id = db.Column(db.Integer, primary_key=True)
     ticket_type = db.Column(db.String(100), nullable=False)
     price = db.Column(db.Float, nullable=False)
+
+    # Foreign key to Event
     event_id = db.Column(db.Integer, db.ForeignKey("events.id"), nullable=False)
     event = db.relationship("Event", back_populates="tickets")
 
-    status = db.Column(db.Enum(TicketStatus), default=TicketStatus.ACTIVE, nullable=False)
-
-    orders = db.relationship("Order", back_populates="ticket", lazy=True, cascade="all, delete-orphan")
-
+    # Relationships
+    orders = db.relationship(
+        "Order", back_populates="ticket", lazy=True, cascade="all, delete-orphan"
+    )
 
 
 
