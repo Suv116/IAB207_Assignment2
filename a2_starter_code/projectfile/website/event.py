@@ -131,14 +131,13 @@ def book_tickets(event_id):
     event = Event.query.get_or_404(event_id)
     tickets = event.tickets
 
-    # Calculate total currently booked for the event
+    # Block booking if event is inactive, cancelled, sold out, or in the past
+    if event.status.name in ["INACTIVE", "CANCELLED", "SOLD_OUT"] or event.event_date < datetime.now().date():
+        flash("This event is not available for booking.", "warning")
+        return redirect(url_for("event.event_details", event_id=event.id))
+
     total_booked = sum(order.quantity for order in event.orders)
     total_tickets_added = 0
-
-    # Check if event is still active
-    if event.status.name == "INACTIVE" or event.event_date < datetime.now().date():
-        flash("This event is no longer active. Ticket booking is closed.", "warning")
-        return redirect(url_for("event.event_details", event_id=event.id))
 
     for ticket in tickets:
         qty = int(request.form.get(f"ticket_{ticket.id}", 0))
@@ -148,7 +147,7 @@ def book_tickets(event_id):
                 flash(f"Cannot book {qty} tickets. Only {event.attendees - total_booked} left.", "warning")
                 return redirect(url_for("event.event_details", event_id=event.id))
 
-            # ✅ Check if user already booked this ticket type
+            # Check if user already booked this ticket type
             existing_order = Order.query.filter_by(
                 user_id=current_user.id,
                 event_id=event.id,
@@ -156,11 +155,9 @@ def book_tickets(event_id):
             ).first()
 
             if existing_order:
-                # Update existing order quantity and price
                 existing_order.quantity += qty
                 existing_order.price += ticket.price * qty
             else:
-                # Create a new order
                 new_order = Order(
                     user_id=current_user.id,
                     event_id=event.id,
@@ -174,28 +171,23 @@ def book_tickets(event_id):
             total_tickets_added += qty
             total_booked += qty
 
-    # If user didn’t select any tickets
     if total_tickets_added == 0:
         flash("Please select at least one ticket to book.", "warning")
         return redirect(url_for("event.event_details", event_id=event.id))
 
     try:
-        # Mark event as sold out if capacity reached
+        # Automatically mark SOLD_OUT if capacity reached
         if event.attendees and total_booked >= event.attendees:
             event.status = EventStatus.SOLD_OUT
 
         db.session.commit()
-
-        if event.status == EventStatus.SOLD_OUT:
-            flash("Tickets booked successfully! Event is now SOLD OUT.", "success")
-        else:
-            flash("Tickets booked successfully!", "success")
-
-    except Exception as e:
+        flash("Tickets booked successfully!", "success")
+    except Exception:
         db.session.rollback()
         flash("Failed to book tickets. Please try again.", "danger")
 
     return redirect(url_for("event.event_details", event_id=event.id))
+
 
 
 # Cancel order 

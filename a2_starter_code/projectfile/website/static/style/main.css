@@ -216,6 +216,24 @@ form textarea {
     font-weight: bold;
 }
 
+.ticket-row.fade-in {
+    animation: fadeIn 0.2s ease forwards;
+}
+
+.ticket-row.fade-out {
+    animation: fadeOut 0.2s ease forwards;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-5px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; transform: translateY(0); }
+    to { opacity: 0; transform: translateY(-5px); }
+}
+
 .edit-event-section .card {
     background-color: #e5dcc5;
 }

@@ -98,7 +98,9 @@
             <!-- Booking Section -->
             <div class="booking mt-5">
                 <h3 class="mb-4">🎟️ Book Tickets</h3>
-                {% if event.status.name != "INACTIVE" and event.event_date >= datetime.now().date() %}
+
+                {% if event.status.name not in ["INACTIVE", "CANCELLED", "SOLD_OUT"] and event.event_date >=
+                datetime.now().date() %}
                 <form method="POST" action="{{ url_for('event.book_tickets', event_id=event.id) }}">
                     <div class="card shadow-sm p-4 mb-4">
                         <div class="row fw-semibold border-bottom pb-2 mb-3">
@@ -138,37 +140,38 @@
                 {% else %}
                 <div class="alert alert-secondary mt-3 text-center">
                     <strong>Ticket booking is closed.</strong><br>
-                    This event has already occurred or is no longer active.
+                    This event is either sold out, cancelled or has already occurred.
                 </div>
                 {% endif %}
             </div>
+        </div>
+
+        <hr>
+
+        <!-- Comments Section -->
+        <div class="comments">
+            <h2>Comments</h2>
+
+            {% for comment in comments %}
+            <div class="comment" style="background: #e5dcc5">
+                <span class="comment-date">{{ comment.created_at.strftime("%b %d, %Y %H:%M") }}</span><br>
+                <strong>{{ comment.user.username }}:</strong> {{ comment.content }}
+            </div>
+            {% else %}
+            <p>No comments yet. Be the first to comment!</p>
+            {% endfor %}
 
             <hr>
-
-            <!-- Comments Section -->
-            <div class="comments">
-                <h2>Comments</h2>
-
-                {% for comment in comments %}
-                <div class="comment" style="background: #e5dcc5">
-                    <span class="comment-date">{{ comment.created_at.strftime("%b %d, %Y %H:%M") }}</span><br>
-                    <strong>{{ comment.user.username }}:</strong> {{ comment.content }}
-                </div>
-                {% else %}
-                <p>No comments yet. Be the first to comment!</p>
-                {% endfor %}
-
-                <hr>
-                <div class="add-comment">
-                    <h3>Leave a Comment</h3>
-                    <form method="POST" action="{{ url_for('event.add_comment', event_id=event.id) }}">
-                        <textarea name="content" placeholder="Write your comment here..."></textarea><br>
-                        <button type="submit">Post Comment</button>
-                    </form>
-                </div>
-
+            <div class="add-comment">
+                <h3>Leave a Comment</h3>
+                <form method="POST" action="{{ url_for('event.add_comment', event_id=event.id) }}">
+                    <textarea name="content" placeholder="Write your comment here..."></textarea><br>
+                    <button type="submit">Post Comment</button>
+                </form>
             </div>
+
         </div>
     </div>
+</div>
 </div>
 {% endblock %}
