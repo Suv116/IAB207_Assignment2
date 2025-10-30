@@ -60,7 +60,6 @@ def index():
     )
 
 
-# Events page
 @main_bp.route('/events')
 def events():
     query = Event.query
@@ -79,12 +78,20 @@ def events():
     if max_price is not None:
         query = query.outerjoin(Ticket).filter((Ticket.price <= max_price) | (Ticket.id.is_(None)))
 
+    # Genres filter fixer
     if genres:
-        try:
-            enum_genres = [Genre[g.upper()] for g in genres if g.upper() in Genre.__members__]
-            query = query.filter(Event.genre.in_(enum_genres))
-        except KeyError:
-            pass
+        genre_map = {
+            "70s": "SEVENTIES",
+            "80s": "EIGHTIES",
+            "90s": "NINETIES",
+            "00s": "TWO_THOUSANDS"
+        }
+        enum_genres = []
+        for g in genres:
+            key = genre_map.get(g.lower(), g.upper())
+            if key in Genre.__members__:
+                enum_genres.append(Genre[key])
+        query = query.filter(Event.genre.in_(enum_genres))
 
     if status:
         status_key = status.replace(" ", "").upper()
@@ -97,6 +104,7 @@ def events():
     events = query.distinct().order_by(Event.event_date.asc()).all()
 
     return render_template("events.html", events=events)
+
 
 
 # Event detail page
