@@ -52,7 +52,7 @@ class Genre(enum.Enum):
     NINETIES = "90s"
     TWO_THOUSANDS = "00s"
     SOUTHERN = "southern"
-    PSYCHEDELIC = "psychedlic"
+    PSYCHEDELIC = "psychedelic"
 
 
 class Event(db.Model):
