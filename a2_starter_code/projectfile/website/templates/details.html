@@ -18,10 +18,9 @@
 
             <!-- Event Title -->
             <h1>{{ event.title }}</h1>
-
-            <!-- The slideshow/carousel -->
+            
+            <!-- Image Carousel -->
             <div id="demo" class="carousel slide" data-bs-ride="carousel">
-
                 <!-- Indicators -->
                 <div class="carousel-indicators">
                     {% for img in event.images %}
@@ -38,7 +37,7 @@
                     {% for img in event.images %}
                     <div class="carousel-item {% if loop.first %}active{% endif %}">
                         <img src="{{ url_for('static', filename='uploads/' ~img.filename) }}"
-                             class="d-block w-100 carousel-img">
+                            class="d-block w-100 carousel-img">
                     </div>
                     {% endfor %}
                 </div>
