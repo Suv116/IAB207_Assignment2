@@ -1,5 +1,5 @@
 import os
-from flask import Flask, session
+from flask import Flask, session, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, logout_user
 from flask_bootstrap5 import Bootstrap
@@ -60,4 +60,12 @@ def create_app():
 
     from . import models
 
+    @app.errorhandler(404)
+    def page_not_found(e):
+        return render_template('404.html'), 404
+    
+    @app.errorhandler(500)
+    def internal_server_error(e):
+        return render_template('500.html'), 500
+    
     return app

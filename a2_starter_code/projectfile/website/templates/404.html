@@ -1,0 +1,36 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container mt-5 text-center">
+  <div class="mask d-flex align-items-center justify-content-center gradient-custom-3" style="min-height: 80vh;">
+    <div class="p-5 rounded fade-in"
+         style="background-color: #e5dcc5; max-width: 600px; color: #4C4C47;
+                box-shadow: 0 8px 20px rgba(0,0,0,0.25); border: 4px solid #e0d8c0;">
+
+      <!-- title -->
+      <h1 class="display-3 fw-bold mb-3"
+          style="font-family: 'Bebas Neue', sans-serif; letter-spacing: 2px; color: #2d2d2a;">
+          404
+      </h1>
+
+      <h3 class="mb-4"
+          style="font-family: 'Bebas Neue', sans-serif; text-transform: uppercase; color: #2d2d2a;">
+          Page Not Found
+      </h3>
+
+      <!-- Message -->
+      <p class="lead mb-4"
+         style="font-family: 'Oswald', sans-serif; font-size: 1.1rem; color: #3a3a3a;">
+         The page you’re looking for doesn’t exist or may have been moved.<br>
+      </p>
+
+      <!-- Button -->
+      <a href="{{ url_for('main.index') }}"
+         class="btn btn-dark btn-lg mt-3"
+         style="border-radius: 8px; font-family: 'Oswald', sans-serif;">
+         Back to Home
+      </a>
+    </div>
+  </div>
+</div>
+{% endblock %}
