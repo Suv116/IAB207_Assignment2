@@ -2,22 +2,19 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request,
 from flask_login import login_required, logout_user, current_user
 from flask_bcrypt import generate_password_hash
 from .forms import RegisterForm
-from .models import User, Comment, Ticket, Event, EventStatus, Genre, EventImage
+from .models import User, Comment, Ticket, Event, EventStatus, Genre, EventImage, Order
 from . import db
 from .models import Event
 from werkzeug.utils import secure_filename
 import os
 from datetime import datetime
-
+from sqlalchemy import func 
 main_bp = Blueprint('main', __name__)
 
 # Home page
 @main_bp.route('/')
 def index():
     today = datetime.now().date()
-
-
-
     # Mark past events as INACTIVE
     past_events = Event.query.filter(Event.event_date < today, Event.status != EventStatus.INACTIVE).all()
     for event in past_events:
@@ -25,9 +22,24 @@ def index():
     if past_events:
         db.session.commit()
     
+    ticket_sales = (
+        db.session.query(
+            Order.event_id,
+            func.sum(Order.quantity).label("tickets_sold")
+        )
+        .group_by(Order.event_id)
+        .subquery()
+    )
     trending_events = (
-        Event.query.filter(Event.event_date >= today)
-        .order_by(Event.event_date.asc())
+        db.session.query(Event, ticket_sales.c.tickets_sold)
+        .outerjoin(ticket_sales, Event.id == ticket_sales.c.event_id)
+        .filter(
+            Event.event_date >= datetime.now().date()  # only upcoming
+        )
+        .filter(
+            (ticket_sales.c.tickets_sold < Event.attendees) | (ticket_sales.c.tickets_sold.is_(None))
+        )  # not sold out
+        .order_by(ticket_sales.c.tickets_sold.desc().nullslast())  # most sold first
         .limit(6)
         .all()
     )
@@ -51,6 +63,8 @@ def index():
     southern_rock_events = Event.query.filter_by(genre=Genre.SOUTHERN).limit(2).all()
     metal_events = Event.query.filter_by(genre=Genre.METAL).limit(2).all()
 
+    # Extract just the Event objects for rendering
+    trending_events = [event for event, _ in trending_events]
     return render_template(
         "index.html",
         trending_events=trending_events,

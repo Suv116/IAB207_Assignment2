@@ -18,82 +18,81 @@
 
             <!-- Event Title -->
             <h1>{{ event.title }}</h1>
+            
+            <!-- Image Carousel -->
+            <div id="demo" class="carousel slide" data-bs-ride="carousel">
+                <!-- Indicators -->
+                <div class="carousel-indicators">
+                    {% for img in event.images %}
+                    <button type="button" data-bs-target="#demo" data-bs-slide-to="{{ loop.index0 }}"
+                            class="{% if loop.first %}active{% endif %}"
+                            aria-current="{% if loop.first %}true{% endif %}"
+                            aria-label="Slide {{ loop.index }}">
+                    </button>
+                    {% endfor %}
+                </div>
 
-            <!-- The slideshow/carousel -->
-<div id="demo" class="carousel slide" data-bs-ride="carousel">
+                <!-- Slides -->
+                <div class="carousel-inner">
+                    {% for img in event.images %}
+                    <div class="carousel-item {% if loop.first %}active{% endif %}">
+                        <img src="{{ url_for('static', filename='uploads/' ~img.filename) }}"
+                            class="d-block w-100 carousel-img">
+                    </div>
+                    {% endfor %}
+                </div>
 
-    <!-- Indicators -->
-    <div class="carousel-indicators">
-        {% for img in event.images %}
-        <button type="button" data-bs-target="#demo" data-bs-slide-to="{{ loop.index0 }}"
-                class="{% if loop.first %}active{% endif %}"
-                aria-current="{% if loop.first %}true{% endif %}"
-                aria-label="Slide {{ loop.index }}">
-        </button>
-        {% endfor %}
-    </div>
-
-    <!-- Slides -->
-    <div class="carousel-inner">
-        {% for img in event.images %}
-        <div class="carousel-item {% if loop.first %}active{% endif %}">
-            <img src="{{ url_for('static', filename='uploads/' ~img.filename) }}"
-                 class="d-block w-100 carousel-img">
-        </div>
-        {% endfor %}
-    </div>
-
-    <!-- Controls -->
-    <button class="carousel-control-prev" type="button" data-bs-target="#demo" data-bs-slide="prev">
-        <span class="carousel-control-prev-icon"></span>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#demo" data-bs-slide="next">
-        <span class="carousel-control-next-icon"></span>
-    </button>
-</div>
+                <!-- Controls -->
+                <button class="carousel-control-prev" type="button" data-bs-target="#demo" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon"></span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#demo" data-bs-slide="next">
+                    <span class="carousel-control-next-icon"></span>
+                </button>
+            </div>
 
             <br>
 
             <!-- Event Info -->
             <div class="event-info">
-    <p><strong>Date:</strong><br>
-        {{ event.event_date.strftime('%A, %b %d, %Y') }}
-    </p>
+            <p><strong>Date:</strong><br>
+                {{ event.event_date.strftime('%A, %b %d, %Y') }}
+            </p>
 
-    <p><strong>Time:</strong><br>
-        {{ event.start_time.strftime('%I:%M %p') }} – {{ event.end_time.strftime('%I:%M %p') }}
-    </p>
+            <p><strong>Time:</strong><br>
+                {{ event.start_time.strftime('%I:%M %p') }} – {{ event.end_time.strftime('%I:%M %p') }}
+            </p>
 
-    <p><strong>Venue:</strong><br>
-        {{ event.venue }}
-    </p>
+            <p><strong>Venue:</strong><br>
+                {{ event.venue }}
+            </p>
 
-    <p><strong>Status:</strong><br>
-        {{ event.status.value|capitalize }}
-    </p>
-    <p><strong>Tickets Left:</strong>
-        {% set total_booked = event.orders|sum(attribute='quantity') %}
-        {% if event.attendees %}
-            {{ event.attendees - total_booked }}
-        {% else %}
-            N/A
-        {% endif %}
-    </p>
+            <p><strong>Status:</strong><br>
+                {{ event.status.value|capitalize }}
+            </p>
+            <p><strong>Tickets Left:</strong>
+                {% set total_booked = event.orders|sum(attribute='quantity') %}
+                {% if event.attendees %}
+                    {{ event.attendees - total_booked }}
+                {% else %}
+                    N/A
+                {% endif %}
+            </p>
 
-    <p><strong>Genre:</strong><br>
-        {{ event.genre.value|capitalize }}
-    </p>
+            <p><strong>Genre:</strong><br>
+                {{ event.genre.value|capitalize }}
+            </p>
 
-    <p><strong>Prices:</strong><br>
-        {% for ticket in event.tickets %}
-        {{ ticket.ticket_type }} - ${{ '%.2f'|format(ticket.price) }}<br>
-        {% endfor %}
-    </p>
+            <p><strong>Prices:</strong><br>
+                {% for ticket in event.tickets %}
+                {{ ticket.ticket_type }} - ${{ '%.2f'|format(ticket.price) }}<br>
+                {% endfor %}
+            </p>
 
-    <p><strong>Description:</strong><br>
-        {{ event.description }}
-    </p>
-</div>
+            <p><strong>Description:</strong><br>
+                {{ event.description }}
+            </p>
+        </div>
 
             <!-- Booking Section -->
             <div class="booking mt-4">

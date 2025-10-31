@@ -94,10 +94,15 @@
                                 {{ event.event_date.strftime('%b %d, %Y') }} · {{ event.venue }} · Status: {{
                                 event.status.value }}
                             </p>
+                            <p class="card-text small text-muted mb-2">
+                                Tickets left:
+                                {{ event.attendees - (event.orders | map(attribute='quantity') | sum) if event.orders else event.attendees }}
+                            </p>
                             <a href="{{ url_for('main.details', event_id=event.id) }}"
                                class="btn btn-primary btn-sm mt-auto w-100">
                                 See Details
                             </a>
+        
                         </div>
                     </div>
                 </div>
