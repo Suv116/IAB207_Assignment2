@@ -65,7 +65,7 @@ def create_event():
                     img = EventImage(event_id=event.id, filename=filename)
                     db.session.add(img)
 
-            # ✅ Handle multiple tickets
+            # Handle multiple tickets
             ticket_types = request.form.getlist("ticket_type[]")
             prices = request.form.getlist("price[]")
 
