@@ -14,9 +14,11 @@
                                   enctype="multipart/form-data">
 
                                 {% for category, message in get_flashed_messages(with_categories=true) %}
-                                <div class="alert alert-{{ category }}" role="alert">
-                                    {{ message }}
-                                </div>
+                                    {% if category == 'danger' %}
+                                    <div class="alert alert-{{ category }}" role="alert">
+                                        {{ message }}
+                                    </div>
+                                    {% endif %}
                                 {% endfor %}
 
                                 <!-- Concert Name -->
@@ -67,12 +69,49 @@
                                     <option value="psychedlic">Psychedlic</option>
                                 </select>
 
-                                <!-- Ticket Price -->
-                                <div class="section-header">Ticket Price</div>
-                                <input type="text" name="ticket_type" class="form-control form-control-lg mb-2"
-                                       placeholder="Ticket type (e.g. General Admission)"/>
-                                <input type="number" name="price" class="form-control form-control-lg"
-                                       placeholder="Price ($)"/>
+                                <!-- Ticket Prices -->
+                                <div class="section-header">Tickets</div>
+
+                                <div id="ticket-section">
+                                    <div class="ticket-entry mb-3">
+                                        <input type="text" name="ticket_type[]"
+                                               class="form-control form-control-lg mb-2"
+                                               placeholder="Ticket type (e.g. General Admission)"/>
+                                        <input type="number" name="price[]" class="form-control form-control-lg"
+                                               placeholder="Price ($)"/>
+                                    </div>
+                                </div>
+
+                                <button type="button" id="add-ticket" class="btn btn-outline-primary btn-sm mt-2">
+                                    + Add another ticket type
+                                </button>
+
+                                <script>
+                                    document.addEventListener("DOMContentLoaded", function () {
+                                        const addTicketBtn = document.getElementById("add-ticket");
+                                        const ticketSection = document.getElementById("ticket-section");
+
+                                        addTicketBtn.addEventListener("click", function () {
+                                            const ticketEntry = document.createElement("div");
+                                            ticketEntry.classList.add("ticket-entry", "mb-3");
+                                            ticketEntry.innerHTML = `
+            <input type="text" name="ticket_type[]" class="form-control form-control-lg mb-2"
+                   placeholder="Ticket type (e.g. VIP)"/>
+            <input type="number" name="price[]" class="form-control form-control-lg"
+                   placeholder="Price ($)"/>
+            <button type="button" class="btn btn-sm btn-outline-danger mt-2 remove-ticket">Remove</button>
+        `;
+                                            ticketSection.appendChild(ticketEntry);
+                                        });
+
+                                        document.body.addEventListener("click", function (e) {
+                                            if (e.target.classList.contains("remove-ticket")) {
+                                                e.target.parentElement.remove();
+                                            }
+                                        });
+                                    });
+                                </script>
+
 
                                 <!-- Venue -->
                                 <div class="section-header">Venue</div>

@@ -4,32 +4,25 @@ from flask_bcrypt import generate_password_hash
 from .forms import RegisterForm
 from .models import User, Comment, Ticket, Event, EventStatus, Genre, EventImage, Order
 from . import db
-from .models import Event
 from werkzeug.utils import secure_filename
 import os
-from datetime import datetime
-from sqlalchemy import func 
+from datetime import datetime  # keep this
+
 main_bp = Blueprint('main', __name__)
+
 
 # Home page
 @main_bp.route('/')
 def index():
-    today = datetime.now().date()
+    today = datetime.now().date()  # correct usage
+
     # Mark past events as INACTIVE
     past_events = Event.query.filter(Event.event_date < today, Event.status != EventStatus.INACTIVE).all()
     for event in past_events:
         event.status = EventStatus.INACTIVE
     if past_events:
         db.session.commit()
-    
-    ticket_sales = (
-        db.session.query(
-            Order.event_id,
-            func.sum(Order.quantity).label("tickets_sold")
-        )
-        .group_by(Order.event_id)
-        .subquery()
-    )
+
     trending_events = (
         db.session.query(Event, ticket_sales.c.tickets_sold)
         .outerjoin(ticket_sales, Event.id == ticket_sales.c.event_id)
@@ -59,7 +52,7 @@ def index():
 
     # Fetch top genre events dynamically
     grunge_events = Event.query.filter_by(genre=Genre.GRUNGE).limit(2).all()
-    seventies_events = Event.query.filter_by(genre=Genre.SEVENTIES ).limit(2).all()
+    seventies_events = Event.query.filter_by(genre=Genre.SEVENTIES).limit(2).all()
     southern_rock_events = Event.query.filter_by(genre=Genre.SOUTHERN).limit(2).all()
     metal_events = Event.query.filter_by(genre=Genre.METAL).limit(2).all()
 
@@ -70,13 +63,12 @@ def index():
         trending_events=trending_events,
         upcoming_events=upcoming_events,
         grunge_events=grunge_events,
-        seventies_events= seventies_events,
+        seventies_events=seventies_events,
         southern_rock_events=southern_rock_events,
         metal_events=metal_events
     )
 
 
-# Events page
 @main_bp.route('/events')
 def events():
     query = Event.query
@@ -95,12 +87,20 @@ def events():
     if max_price is not None:
         query = query.outerjoin(Ticket).filter((Ticket.price <= max_price) | (Ticket.id.is_(None)))
 
+    # Genres filter fixer
     if genres:
-        try:
-            enum_genres = [Genre[g.upper()] for g in genres if g.upper() in Genre.__members__]
-            query = query.filter(Event.genre.in_(enum_genres))
-        except KeyError:
-            pass
+        genre_map = {
+            "70s": "SEVENTIES",
+            "80s": "EIGHTIES",
+            "90s": "NINETIES",
+            "00s": "TWO_THOUSANDS"
+        }
+        enum_genres = []
+        for g in genres:
+            key = genre_map.get(g.lower(), g.upper())
+            if key in Genre.__members__:
+                enum_genres.append(Genre[key])
+        query = query.filter(Event.genre.in_(enum_genres))
 
     if status:
         status_key = status.replace(" ", "").upper()
@@ -123,29 +123,29 @@ def details(event_id):
     comments = Comment.query.filter_by(event_id=event.id).order_by(Comment.created_at.desc()).all()
     user_orders = []
     tickets = event.tickets
-    return render_template("details.html", event=event, comments=comments, tickets=tickets, user_orders=user_orders, datetime=datetime)
+    return render_template("details.html", event=event, comments=comments, tickets=tickets, user_orders=user_orders,
+                           datetime=datetime)
 
 
-## Update event page
+# Update event page
 @main_bp.route('/update-event', methods=['GET', 'POST'])
 @login_required
 def update_event():
     user_events = Event.query.filter_by(user_id=current_user.id).all()
-
-    # Get selected event from query string or form
     event_id = request.args.get('event_id') or request.form.get('event_id')
     selected_event = Event.query.filter_by(id=event_id, user_id=current_user.id).first() if event_id else None
 
     if request.method == 'POST' and selected_event:
+        # Basic info
         title = request.form.get('title')
         if not title:
             flash('Event name cannot be empty.', 'danger')
             return redirect(url_for('main.update_event', event_id=selected_event.id))
-
         selected_event.title = title
-        selected_event.description = request.form.get('description')
-        selected_event.venue = request.form.get('venue')
+        selected_event.description = request.form.get('description', selected_event.description)
+        selected_event.venue = request.form.get('venue', selected_event.venue)
 
+        # Genre
         genre_type = request.form.get('genre')
         if genre_type:
             try:
@@ -154,49 +154,53 @@ def update_event():
                 flash('Invalid genre selected.', 'danger')
                 return redirect(url_for('main.update_event', event_id=selected_event.id))
 
-        # Ticket update
-        ticket_type = request.form.get('ticket_type') or "General Admission"
-        ticket_price = request.form.get('ticket_price')
+        # Date & time
         try:
-            price_change = float(ticket_price) if ticket_price else 0.0
+            event_date_str = request.form.get('event_date')
+            if event_date_str:
+                selected_event.event_date = datetime.strptime(event_date_str, "%Y-%m-%d").date()
+            start_time_str = request.form.get('start_time')
+            if start_time_str:
+                selected_event.start_time = datetime.strptime(start_time_str, "%H:%M").time()
+            end_time_str = request.form.get('end_time')
+            if end_time_str:
+                selected_event.end_time = datetime.strptime(end_time_str, "%H:%M").time()
         except ValueError:
-            flash('Invalid ticket price.', 'danger')
+            flash("Invalid date or time format.", "danger")
             return redirect(url_for('main.update_event', event_id=selected_event.id))
 
-        ticket = Ticket.query.filter_by(event_id=selected_event.id).first()
-        if ticket:
-            ticket.ticket_type = ticket_type
-            ticket.price = price_change
-        else:
-            ticket = Ticket(ticket_type=ticket_type, price=price_change, event_id=selected_event.id)
-            db.session.add(ticket)
+        # Update existing tickets
+        for ticket in selected_event.tickets:
+            ticket_type = request.form.get(f"existing_ticket_type_{ticket.id}")
+            ticket_price = request.form.get(f"existing_ticket_price_{ticket.id}")
+            if ticket_type:
+                ticket.ticket_type = ticket_type.strip()
+            if ticket_price:
+                try:
+                    ticket.price = float(ticket_price)
+                except ValueError:
+                    ticket.price = 0.0
 
-        # Date/time update
-        changed = False
-        for field, fmt in [
-            ('event_date', "%Y-%m-%d"),
-            ('start_time', "%H:%M"),
-            ('end_time', "%H:%M"),
-        ]:
-            value = request.form.get(field)
-            if value:
-                if 'date' in field:
-                    setattr(selected_event, field, datetime.datetime.strptime(value, fmt).date())
-                else:
-                    try:
-                        setattr(selected_event, field, datetime.datetime.strptime(value, "%H:%M:%S").time())
-                    except ValueError:
-                        setattr(selected_event, field, datetime.datetime.strptime(value, "%H:%M").time())
-                changed = True
+        # Add new tickets
+        new_types = request.form.getlist('new_ticket_type[]')
+        new_prices = request.form.getlist('new_ticket_price[]')
+        for t_type, t_price in zip(new_types, new_prices):
+            if t_type.strip():
+                try:
+                    price_val = float(t_price)
+                except ValueError:
+                    price_val = 0.0
+                ticket = Ticket(ticket_type=t_type.strip(), price=price_val, event_id=selected_event.id)
+                db.session.add(ticket)
 
-        # Main photo
+        # Main Image
         photo_file = request.files.get("photo")
         if photo_file and photo_file.filename:
             filename = secure_filename(photo_file.filename)
             photo_file.save(os.path.join(current_app.config["UPLOAD_FOLDER"], filename))
             selected_event.photo = filename
 
-        # Carousel images
+        # Carousel Images
         carousel_files = request.files.getlist("carousel_images")
         if carousel_files and carousel_files[0].filename:
             EventImage.query.filter_by(event_id=selected_event.id).delete()
@@ -207,31 +211,31 @@ def update_event():
                     img = EventImage(event_id=selected_event.id, filename=filename)
                     db.session.add(img)
 
-        if changed:
-            db.session.commit()
-            flash('Event updated successfully', 'success')
-            return redirect(url_for('main.update_event', event_id=selected_event.id))
+        db.session.commit()
+        flash('Event updated successfully!', 'success')
+        return redirect(url_for('main.update_event', event_id=selected_event.id))
 
-    return render_template(
-        'UpdateEvent.html',
-        events=user_events,
-        selected_event=selected_event
-    )
+    return render_template('UpdateEvent.html', events=user_events, selected_event=selected_event,
+                           EventStatus=EventStatus)
 
+
+
+# Delete event
 @main_bp.route('/delete-event/<int:event_id>', methods=['POST'])
 @login_required
 def delete_event(event_id):
     event = Event.query.filter_by(id=event_id, user_id=current_user.id).first_or_404()
-    
-    # Delete info and images
-    Ticket.query.filter_by(event_id=event.id).delete()
-    EventImage.query.filter_by(event_id=event.id).delete()
-    
-    db.session.delete(event)
-    db.session.commit()
-    flash('Event cancelled successfully.', 'success')
-    return redirect(url_for('main.update_event'))
 
+    # Toggle event status correctly using Enum
+    if event.status == EventStatus.CANCELLED:
+        event.status = EventStatus.OPEN
+        flash('Event re-opened successfully.', 'success')
+    else:
+        event.status = EventStatus.CANCELLED
+        flash('Event cancelled successfully.', 'success')
+
+    db.session.commit()
+    return redirect(url_for('main.update_event', event_id=event.id))
 
 
 # Event history page
@@ -240,11 +244,10 @@ def delete_event(event_id):
 def history():
     return render_template('history.html')
 
+
 # Logout
 @main_bp.route('/logout')
 @login_required
 def logout():
     logout_user()
     return redirect(url_for('main.index'))
-
-

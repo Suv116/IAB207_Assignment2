@@ -8,7 +8,17 @@
                 <div class="col-md-8 mx-auto">
                     <div class="card" style="border-radius: 15px;">
                         <div class="card-body p-5">
-                            <h2 class="text-center mb-5">Edit Your Event</h2>
+                            <h2 class="text-center mb-5" style="font-family: 'Oswald', sans-serif;">Edit Your Event</h2>
+                            {% with messages = get_flashed_messages(with_categories=true) %}
+                                {% if messages %}
+                                    {% for category, message in messages %}
+                                    <div class="alert alert-{{ category }} alert-dismissible fade show mt-3" role="alert">
+                                        {{ message }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                    {% endfor %}
+                                {% endif %}
+                            {% endwith %}
 
                             <form method="POST" enctype="multipart/form-data">
                                 <!-- Event Selection -->
@@ -18,119 +28,134 @@
                                             onchange="if(this.value) { window.location.href='?event_id=' + this.value; }">
                                         <option value="">-- Select your event --</option>
                                         {% for event in events %}
-                                            <option value="{{ event.id }}" {% if selected_event and event.id == selected_event.id %}selected{% endif %}>
-                                                {{ event.title }}
-                                            </option>
+                                        <option value="{{ event.id }}" {% if selected_event and event.id==
+                                                selected_event.id %}selected{% endif %}>
+                                            {{ event.title }}
+                                        </option>
                                         {% endfor %}
                                     </select>
-
                                 </div>
 
+                                {% if selected_event %}
                                 <!-- Event Name -->
                                 <div class="section-header">Event Name</div>
                                 <div class="form-outline mb-4">
                                     <input type="text" class="form-control form-control-lg" name="title"
-                                           value="{{ selected_event.title if selected_event else '' }}"/>
+                                           value="{{ selected_event.title }}"/>
                                 </div>
 
                                 <!-- Description -->
                                 <div class="section-header">Description</div>
                                 <div class="form-outline mb-4">
-                                    <textarea class="form-control form-control-lg" name="description" rows="3">{{ selected_event.description if selected_event else '' }}</textarea>
+                                    <textarea class="form-control form-control-lg" name="description" rows="3">{{ selected_event.description }}</textarea>
                                 </div>
 
                                 <!-- Date -->
                                 <div class="section-header">Date</div>
                                 <div class="form-outline mb-4">
                                     <input type="date" class="form-control form-control-lg" name="event_date"
-                                           value="{{ selected_event.event_date if selected_event else '' }}"/>
+                                           value="{{ selected_event.event_date.strftime('%Y-%m-%d') }}"/>
                                 </div>
 
-                                <!-- Start Time -->
-                                <div class="section-header">Start Time</div>
-                                <div class="form-outline mb-4">
-                                    <input type="time" class="form-control form-control-lg" name="start_time"
-                                           value="{{ selected_event.start_time if selected_event else '' }}"/>
-                                </div>
-
-                                <!-- End Time -->
-                                <div class="section-header">End Time</div>
-                                <div class="form-outline mb-4">
-                                    <input type="time" class="form-control form-control-lg" name="end_time"
-                                           value="{{ selected_event.end_time if selected_event else '' }}"/>
+                                <!-- Times -->
+                                <div class="section-header">Event Times</div>
+                                <div class="row mb-4">
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">Start Time</label>
+                                        <input type="time" class="form-control form-control-lg" name="start_time"
+                                               value="{{ selected_event.start_time.strftime('%H:%M') }}"/>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <label class="form-label">End Time</label>
+                                        <input type="time" class="form-control form-control-lg" name="end_time"
+                                               value="{{ selected_event.end_time.strftime('%H:%M') }}"/>
+                                    </div>
                                 </div>
 
                                 <!-- Venue -->
                                 <div class="section-header">Venue</div>
                                 <div class="form-outline mb-4">
                                     <input type="text" class="form-control form-control-lg" name="venue"
-                                           value="{{ selected_event.venue if selected_event else '' }}"/>
+                                           value="{{ selected_event.venue }}"/>
                                 </div>
 
-                                <!-- Ticket Type -->
-                                <div class="section-header">Ticket Type</div>
-                                <div class="form-outline mb-4">
-                                    <input type="text" class="form-control form-control-lg" name="ticket_type"
-                                        placeholder="Ticket type (e.g. General Admission)"
-                                        value="{{ ticket_type if ticket_type is not none else '' }}"/>
+                                <div id="ticket-container">
+                                    <!-- Existing tickets -->
+                                    {% for ticket in selected_event.tickets %}
+                                    <div class="mb-3 ticket-row d-flex gap-2 align-items-center">
+                                        <input type="text" name="existing_ticket_type_{{ ticket.id }}"
+                                               class="form-control flex-grow-2"
+                                               value="{{ ticket.ticket_type }}">
+                                        <input type="number" step="0.01" name="existing_ticket_price_{{ ticket.id }}"
+                                               class="form-control flex-grow-1"
+                                               value="{{ ticket.price }}">
+                                        <!-- No remove button -->
+                                    </div>
+                                    {% endfor %}
                                 </div>
+                                <button type="button" id="add-ticket-btn" class="btn btn-outline-primary btn-sm mb-4">
+                                    Add Ticket
+                                </button>
 
-                                <!-- Ticket Price -->
-                                <div class="section-header">Ticket Price</div>
-                                <div class="form-outline mb-4">
-                                    <input type="number" step="0.01" class="form-control form-control-lg" name="ticket_price"
-                                        placeholder="Ticket price ($)" value="{{ ticket_price if ticket_price is not none else '' }}"/>
-                                </div>
 
-                                <!-- Genres -->
+                                <!-- Genre -->
                                 <div class="section-header">Genre</div>
                                 <div class="form-outline mb-4">
                                     <select class="form-control form-control-lg" name="genre">
                                         <option selected disabled>Select genre</option>
-                                        {% set genres = ['grunge', 'metal', 'tribute', 'classic', '70s', '80s', '90s', '00s', 'southern', 'psychedelic'] %}
+                                        {% set genres = ['grunge', 'metal', 'tribute', 'classic', '70s', '80s', '90s',
+                                        '00s', 'southern', 'psychedelic'] %}
                                         {% for genre in genres %}
-                                            <option value="{{ genre }}"
-                                                {% if selected_event and selected_event.genre and selected_event.genre.value == genre %}selected{% endif %}>
-                                                {{ genre|capitalize }}
-                                            </option>
+                                        <option value="{{ genre }}"
+                                                {% if selected_event.genre and selected_event.genre.value== genre
+                                                %}selected{% endif %}>
+                                            {{ genre|capitalize }}
+                                        </option>
                                         {% endfor %}
                                     </select>
                                 </div>
 
-                                <!-- Main Image -->
+                                <!-- Images -->
                                 <div class="section-header">Main Image</div>
                                 <input type="file" name="photo" class="form-control form-control-lg"/>
                                 <small class="text-muted">Leave empty to keep current main image</small>
 
-                                <!-- Carousel Images -->
                                 <div class="section-header">Carousel Images</div>
-                                <input type="file" name="carousel_images" class="form-control form-control-lg" multiple/>
+                                <input type="file" name="carousel_images" class="form-control form-control-lg"
+                                       multiple/>
                                 <small class="text-muted">Leave empty to keep current carousel images</small>
 
-                                <!-- Important Note -->
                                 <p class="text-muted text-center mb-4">
                                     Event status cannot be changed manually. The system will update it automatically.
                                 </p>
 
-                                <!-- Submit -->
                                 <div class="d-flex justify-content-center">
                                     <button type="submit"
                                             class="btn btn-success btn-block btn-lg gradient-custom-4 text-body">
                                         Save Changes
                                     </button>
                                 </div>
+                                {% endif %}
                             </form>
 
-
-                            <!-- Cancel Event -->
                             {% if selected_event %}
+                            {% if selected_event.status == EventStatus.CANCELLED %}
                             <form method="POST" action="{{ url_for('main.delete_event', event_id=selected_event.id) }}">
                                 <button type="submit"
-                                        class="btn btn-danger btn-block btn-lg text-body"
+                                        class="btn btn-success btn-block btn-lg text-body mt-3"
+                                        onclick="return confirm('Are you sure you want to re-open this event?');">
+                                    Re-open This Event
+                                </button>
+                            </form>
+                            {% else %}
+                            <form method="POST" action="{{ url_for('main.delete_event', event_id=selected_event.id) }}">
+                                <button type="submit"
+                                        class="btn btn-danger btn-block btn-lg text-body mt-3"
                                         onclick="return confirm('Are you sure you want to cancel this event?');">
                                     Cancel This Event
                                 </button>
                             </form>
+                            {% endif %}
                             {% endif %}
 
                         </div>
@@ -140,5 +165,41 @@
         </div>
     </div>
 </div>
+
+<script>
+    const ticketContainer = document.getElementById('ticket-container');
+    const addTicketBtn = document.getElementById('add-ticket-btn');
+
+    // Function to create a ticket row
+    function createTicketRow(type = '', price = '') {
+        const row = document.createElement('div');
+        row.classList.add('mb-3', 'ticket-row', 'd-flex', 'gap-2', 'align-items-center', 'fade-in');
+        row.innerHTML = `
+        <input type="text" name="new_ticket_type[]" class="form-control flex-grow-2" placeholder="Ticket Type" value="${type}">
+        <input type="number" step="0.01" name="new_ticket_price[]" class="form-control flex-grow-1" placeholder="Price $" value="${price}">
+        <button type="button" class="btn btn-outline-danger btn-sm remove-ticket-btn">&times;</button>
+    `;
+
+        // Remove new ticket row
+        row.querySelector('.remove-ticket-btn').addEventListener('click', () => {
+            row.classList.add('fade-out');
+            setTimeout(() => row.remove(), 200);
+        });
+
+        ticketContainer.appendChild(row);
+    }
+
+    // Add new ticket
+    addTicketBtn.addEventListener('click', () => createTicketRow());
+
+    // Apply remove functionality to existing rows
+    document.querySelectorAll('.remove-ticket-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const row = btn.closest('.ticket-row');
+            row.classList.add('fade-out');
+            setTimeout(() => row.remove(), 200);
+        });
+    });
+</script>
 
 {% endblock %}
