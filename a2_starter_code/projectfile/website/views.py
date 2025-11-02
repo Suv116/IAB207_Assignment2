@@ -6,51 +6,66 @@ from .models import User, Comment, Ticket, Event, EventStatus, Genre, EventImage
 from . import db
 from werkzeug.utils import secure_filename
 import os
-from datetime import datetime  # keep this
+from datetime import datetime
+from sqlalchemy import func
+
 
 main_bp = Blueprint('main', __name__)
 
 
-# Home page
 @main_bp.route('/')
 def index():
-    today = datetime.now().date()  # correct usage
+    today = datetime.now().date()
 
     # Mark past events as INACTIVE
-    past_events = Event.query.filter(Event.event_date < today, Event.status != EventStatus.INACTIVE).all()
+    past_events = Event.query.filter(
+        Event.event_date < today, Event.status != EventStatus.INACTIVE
+    ).all()
     for event in past_events:
         event.status = EventStatus.INACTIVE
     if past_events:
         db.session.commit()
 
-    trending_events = (
-        db.session.query(Event, ticket_sales.c.tickets_sold)
-        .outerjoin(ticket_sales, Event.id == ticket_sales.c.event_id)
-        .filter(
-            Event.event_date >= datetime.now().date()  # only upcoming
+    # Calculate tickets sold per event using the Order table
+    tickets_sold_subquery = (
+        db.session.query(
+            Order.event_id,
+            func.coalesce(func.sum(Order.quantity), 0).label("tickets_sold")
         )
+        .group_by(Order.event_id)
+        .subquery()
+    )
+
+    # Trending events (most tickets sold, not sold out, upcoming)
+    trending_events = (
+        db.session.query(Event, tickets_sold_subquery.c.tickets_sold)
+        .outerjoin(tickets_sold_subquery, Event.id == tickets_sold_subquery.c.event_id)
+        .filter(Event.event_date >= today)  # only upcoming
         .filter(
-            (ticket_sales.c.tickets_sold < Event.attendees) | (ticket_sales.c.tickets_sold.is_(None))
+            (tickets_sold_subquery.c.tickets_sold < Event.attendees)
+            | (tickets_sold_subquery.c.tickets_sold.is_(None))
         )  # not sold out
-        .order_by(ticket_sales.c.tickets_sold.desc().nullslast())  # most sold first
+        .order_by(tickets_sold_subquery.c.tickets_sold.desc().nullslast())  # most sold first
         .limit(6)
         .all()
     )
 
+    # Upcoming events
     upcoming_events = (
         Event.query.filter(Event.event_date >= today, Event.status != EventStatus.INACTIVE)
         .order_by(Event.event_date.asc())
-        .offset(6)
         .limit(6)
         .all()
     )
+
+    # Previous (inactive) events
     previous_events = (
         Event.query.filter(Event.status == EventStatus.INACTIVE)
         .order_by(Event.event_date.desc())
         .all()
     )
 
-    # Fetch top genre events dynamically
+    # Genre-based selections
     grunge_events = Event.query.filter_by(genre=Genre.GRUNGE).limit(2).all()
     seventies_events = Event.query.filter_by(genre=Genre.SEVENTIES).limit(2).all()
     southern_rock_events = Event.query.filter_by(genre=Genre.SOUTHERN).limit(2).all()
@@ -58,14 +73,16 @@ def index():
 
     # Extract just the Event objects for rendering
     trending_events = [event for event, _ in trending_events]
+
     return render_template(
         "index.html",
         trending_events=trending_events,
         upcoming_events=upcoming_events,
+        previous_events=previous_events,
         grunge_events=grunge_events,
         seventies_events=seventies_events,
         southern_rock_events=southern_rock_events,
-        metal_events=metal_events
+        metal_events=metal_events,
     )
 
 

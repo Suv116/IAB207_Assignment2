@@ -94,7 +94,7 @@
             </a>
 
             <div class="row">
-                {% for event in trending_events %}
+                {% for event in upcoming_events %}
                 <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 mb-3">
                     <div class="card h-100 event-card">
                         <img class="card-img-top event-img"
@@ -105,10 +105,6 @@
                             <p class="card-text small mb-2">
                                 {{ event.event_date.strftime('%b %d, %Y') }} · {{ event.venue }} · Status: {{
                                 event.status.value }}
-                            </p>
-                            <p class="card-text small text-muted mb-2">
-                                Tickets left:
-                                {{ event.attendees - (event.orders | map(attribute='quantity') | sum) if event.orders else event.attendees }}
                             </p>
                             <a href="{{ url_for('main.details', event_id=event.id) }}"
                                class="btn btn-primary btn-sm mt-auto w-100">
